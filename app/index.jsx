@@ -1,15 +1,18 @@
 
-import {ScrollView, Text, View,Image} from "react-native";
+import {ScrollView, Text, View, Image, TouchableOpacity, Linking} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 import images from "../constants/images";
 import icon from "../constants/icons"
 import GoBackButton from "../components/GoBackButton";
 import NextButton from "../components/NextButton";
-import {Redirect,router} from "expo-router";
+import {Link, router} from "expo-router";
 
 
 
-export default function App(){
+
+
+export default function Index(){
+
     return(
         <SafeAreaView className="bg-white h-full">
 <ScrollView contentContainerStyle={{height:'100%'}}>
@@ -31,11 +34,14 @@ export default function App(){
         <View style={{ flexDirection: 'column', alignItems: 'center'}}>
             <Image source={icon.circ2} style={{ marginTop: 10}}/>
         </View>
-        <NextButton/>
+        <NextButton handlePress={() => router.push("./(boarding)/screenthree")}/>
 
-        <View style={{ position: 'absolute', right: 15}}>
-            <Text className={"mt-14"} style={{color:"#006FFF"}}>Skip</Text>
-        </View>
+
+            <Link href={"./(auth)/signup"} className={"mt-14"} style={{color:"#006FFF", position: 'absolute', right: 15}}>
+                Skip
+            </Link>
+
+
     </View>
 
 

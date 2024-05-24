@@ -1,11 +1,12 @@
 
-import {ScrollView, Text, View,Image} from "react-native";
+import {ScrollView, Text, View, Image, TouchableOpacity} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
-import images from "../constants/images";
-import icon from "../constants/icons"
-import GoBackButton from "../components/GoBackButton";
-import NextButton from "../components/NextButton";
+import images from "../../constants/images";
+import icon from "../../constants/icons"
+import GoBackButton from "../../components/GoBackButton";
+import NextButton from "../../components/NextButton";
 import {Redirect,router} from "expo-router";
+import indexPage from "../index"
 
 
 
@@ -14,11 +15,11 @@ export default function Screenthree(){
         <SafeAreaView className="bg-white h-full">
             <ScrollView contentContainerStyle={{height:'100%'}}>
                 <View className = "w-full justify-center items-center h-full px-4">
-                    <Image source={images.girl} className="mb-10"/>
+                    <Image source={images.man2} className="mb-10"/>
 
                     <View className="resize mb-7">
                         <Text className="text-3xl text-black font-bold text-center">
-                            Discover Properties <Text style={{color:"#006FFF"}}>Using The Map</Text>
+                            <Text style={{color:"#006FFF"}}>Arrange Tours</Text> to View Properties
                         </Text>
 
                         <Text className="font-light text-center mt-4" style={{color:"#B9B3B3"}}>
@@ -26,16 +27,18 @@ export default function Screenthree(){
                     </View>
                     <View className="flex-row justify-between mt-16 px-4">
                         <GoBackButton
-                            handlePress={() =>{router.push('./(boarding)/screentwo')}}
+                            handlePress={() =>{router.push(indexPage)}}
                         />
                         <View style={{ flexDirection: 'column', alignItems: 'center'}}>
-                            <Image source={icon.circ2} style={{ marginTop: 10}}/>
+                            <Image source={icon.circ3} style={{ marginTop: 10}}/>
                         </View>
                         <NextButton/>
 
-                        <View style={{ position: 'absolute', right: 15}}>
-                            <Text className={"mt-14"} style={{color:"#006FFF"}}>Skip</Text>
-                        </View>
+                        <TouchableOpacity className={"mt-14"}    onPress={()=>router.push("../(auth)/sign_up")} >
+                            <Text style={{color:"#006FFF", position: 'absolute', right: 15}}>
+                                Skip
+                            </Text>
+                        </TouchableOpacity>
                     </View>
 
 

@@ -5,7 +5,7 @@ import {StatusBar} from "react-native-web";
 const Home = () =>{
     return(
         <View style={styles.container}>
-            <Text>Profile demo</Text>
+            <Text>Profile h</Text>
         </View>
 
     )}

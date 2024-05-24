@@ -1,10 +1,11 @@
 
-import {ScrollView, Text, View,Image} from "react-native";
+import {ScrollView, Text, View, Image, TouchableOpacity} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 import images from "../../constants/images";
 import icon from "../../constants/icons"
 import NextButton from "../../components/NextButton";
 import {Redirect,router} from "expo-router";
+import indexPage from "../index"
 
 
 export default function ScreenTwo(){
@@ -27,11 +28,13 @@ export default function ScreenTwo(){
                         <View style={{ flexDirection: 'column', alignItems: 'center',marginLeft:130}}>
                             <Image source={icon.circ1} style={{ marginTop: 10}}/>
                         </View>
-                        <NextButton handlePress={()=>router.push()}/>
+                        <NextButton handlePress={()=>router.push(indexPage)}/>
 
-                        <View style={{ position: 'absolute', right: 15}}>
-                            <Text className={"mt-14"} style={{color:"#006FFF"}}>Skip</Text>
-                        </View>
+                        <TouchableOpacity className={"mt-14"}    onPress={()=>router.push("../(auth)/sign_up")} >
+                            <Text style={{color:"#006FFF", position: 'absolute', right: 15}}>
+                                Skip
+                            </Text>
+                        </TouchableOpacity>
                     </View>
 
 

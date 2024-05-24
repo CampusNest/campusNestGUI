@@ -2,7 +2,7 @@ import {StyleSheet,Text,View} from "react-native";
 import {StatusBar} from "react-native-web";
 
 
-const App = () =>{
+const Profile = () =>{
     return(
         <View style={styles.container}>
             <Text>Profile demo</Text>
@@ -20,4 +20,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default App;
+export default Profile;

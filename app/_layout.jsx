@@ -8,6 +8,7 @@ const RootLayout = () =>{
   return (
 <Stack>
     <Stack.Screen name="index" options={{headerShown:false}}/>
+  <Stack.Screen name="(boarding)/screentwo" options={{headerShown:false}}/>
 </Stack>
   )
 }

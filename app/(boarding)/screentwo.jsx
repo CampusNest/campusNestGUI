@@ -4,7 +4,7 @@ import {SafeAreaView} from "react-native-safe-area-context";
 import images from "../../constants/images";
 import icon from "../../constants/icons"
 import NextButton from "../../components/NextButton";
-
+import {Redirect,router} from "expo-router";
 
 
 export default function ScreenTwo(){
@@ -24,10 +24,10 @@ export default function ScreenTwo(){
                     </View>
                     <View className="flex-row justify-between mt-16 px-4">
 
-                        <View style={{ flexDirection: 'column', alignItems: 'center',marginLeft:100}}>
+                        <View style={{ flexDirection: 'column', alignItems: 'center',marginLeft:130}}>
                             <Image source={icon.circ1} style={{ marginTop: 10}}/>
                         </View>
-                        <NextButton/>
+                        <NextButton handlePress={()=>router.push()}/>
 
                         <View style={{ position: 'absolute', right: 15}}>
                             <Text className={"mt-14"} style={{color:"#006FFF"}}>Skip</Text>

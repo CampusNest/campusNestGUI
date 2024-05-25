@@ -5,7 +5,7 @@ import {StatusBar} from "react-native-web";
 const Book = () =>{
     return(
         <View style={styles.container}>
-            <Text>Profile demo</Text>
+            <Text>Profile b</Text>
         </View>
 
     )}

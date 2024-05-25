@@ -1,11 +1,13 @@
 import {StyleSheet,Text,View} from "react-native";
 import {StatusBar} from "react-native-web";
+import {Link} from "expo-router";
 
 
-const SignUp = () =>{
+const Signup = () =>{
     return(
         <View style={styles.container}>
-            <Text>Profile demo</Text>
+
+            <Text>Sign up</Text>
         </View>
 
     )}
@@ -20,4 +22,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SignUp ;
+export default Signup ;

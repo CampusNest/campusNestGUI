@@ -1,7 +1,9 @@
-import girl from "../assets/images/searchGirl.png"
-import man from "../assets/images/twomen.png"
+import houseMan from "../assets/images/houseMan.jpeg"
+import man from "../assets/images/people.jpeg"
+import man2 from "../assets/images/womann.png"
 
 export default {
-    girl,
-    man
+    houseMan,
+    man,
+    man2
 }

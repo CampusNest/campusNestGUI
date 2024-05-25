@@ -1,9 +1,9 @@
 import {StyleSheet,Text,View} from "react-native";
-import {StatusBar} from "react-native-web";
 
 
 const SignIn = () =>{
     return(
+
         <View style={styles.container}>
             <Text>Profile signin </Text>
         </View>

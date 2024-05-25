@@ -1,12 +1,15 @@
 import { router } from 'expo-router';
 
-
 export const navigateToScreenTwo = () => {
     router.push('./(boarding)/screentwo');
 };
 
 export const navigateToScreenThree = () => {
     router.push('./(boarding)/screenthree');
+};
+
+export const navigateToScreenOne = () => {
+    router.push('../../app/(boarding)/screenone');
 };
 
 export const navigateToSignIn = () => {

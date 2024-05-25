@@ -1,9 +1,11 @@
-import houseMan from "../assets/images/houseMan.jpeg"
-import man from "../assets/images/people.jpeg"
-import man2 from "../assets/images/womann.png"
+import houseMan from "../assets/images/ImageScreenOne.png"
+import man from "../assets/images/ImageScreen2.png"
+import man2 from "../assets/images/ImageScreen3.png"
+import splash from  "../assets/images/splashScreen.png"
 
 export default {
     houseMan,
     man,
-    man2
+    man2,
+    splash
 }

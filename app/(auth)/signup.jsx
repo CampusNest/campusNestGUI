@@ -1,24 +1,30 @@
-import {StyleSheet,Text,View} from "react-native";
-import {StatusBar} from "react-native-web";
-import {Link} from "expo-router";
+import {ScrollView, Text, View,StyleSheet} from "react-native";
+import {SafeAreaView} from "react-native-safe-area-context";
 
 
 const Signup = () =>{
     return(
-        <View style={styles.container}>
+        <SafeAreaView>
+            <ScrollView>
+                <View className="w-full justify-center items-center h-full px-4" style={styles.main}>
 
-            <Text>Sign up</Text>
-        </View>
+                    <Text>I am a student</Text>
+                    <Text>I am a house owner</Text>
+
+                </View>
+
+            </ScrollView>
+        </SafeAreaView>
 
     )}
 
 const styles = StyleSheet.create({
-    container:{
-        display:"flex",
+    main:{  display:"flex",
         flex:1,
         backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
+
     },
 });
 

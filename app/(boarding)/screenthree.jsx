@@ -71,11 +71,11 @@ export default function Screenthree() {
 }
 const styles = StyleSheet.create({
     container:{
-       width: 150,
+       width: 324,
         height: 50,
         backgroundColor: "#006FFF",
         color: "#fff",
-        borderRadius: 5,
+        borderRadius: 50,
         textAlign: "center",
         fontSize: 18,
         paddingTop: 12.5

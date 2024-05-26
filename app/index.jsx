@@ -19,6 +19,7 @@ export default function Index() {
             <ScrollView>
                 <View className="w-full justify-center  items-center h-full px-4">
                     <Image source={image.splash} style={{width:365, height:550}}/>
+                    <Image source={image.logo} style={{height: 40, width: 280}} className={"mt-7"}/>
                 </View>
 
             </ScrollView>

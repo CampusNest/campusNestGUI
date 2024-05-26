@@ -1,11 +1,11 @@
 import {StyleSheet,Text,View} from "react-native";
 
 
-const SignIn = () =>{
+const SignUpStudent = () =>{
     return(
 
         <View style={styles.container}>
-            <Text>Profile signin </Text>
+            <Text>Student Registration loading...... </Text>
         </View>
 
     )}
@@ -20,4 +20,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SignIn;
+export default SignUpStudent;

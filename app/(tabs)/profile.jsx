@@ -5,7 +5,7 @@ import {StatusBar} from "react-native-web";
 const AuthLayout = () =>{
     return(
         <View style={styles.container}>
-            <Text>Profile demo</Text>
+            <Text>Profile p</Text>
         </View>
 
     )}

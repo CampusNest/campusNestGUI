@@ -1,72 +1,30 @@
-import React, { useRef } from 'react';
-import { ScrollView, Text, View, Image } from 'react-native';
+import React, {useEffect} from 'react';
+import { ScrollView, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GestureHandlerRootView, PanGestureHandler, State } from 'react-native-gesture-handler';
-import images from '../constants/images';
-import { Link } from 'expo-router';
-import { navigateToScreenTwo, navigateToScreenThree, navigateToSignIn } from '../components/navigation/navigate';
-import { debounce } from 'lodash';
-import CircleShape from "../components/CircleShape";
+import {useRouter} from 'expo-router';
+import image from "../constants/images"
 
 export default function Index() {
-    const swipeHandler = useRef(
-        debounce((nativeEvent) => {
-            if (nativeEvent.velocityX > 0.2) {
-                navigateToScreenTwo();
-            } else if (nativeEvent.velocityX < -0.2) {
-                navigateToScreenThree();
+    const router = useRouter();
 
-            }
-        }, 20)
-    ).current;
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            router.push('./(boarding)/screentwo');
+        }, 3000);
 
-    const handleGestureEvent = (event) => {
-        event.persist();
-        swipeHandler(event.nativeEvent);
-    };
-
+        return () => clearTimeout(timer);
+    }, [router]);
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaView className="bg-white h-full">
-                <ScrollView contentContainerStyle={{ height: '100%' }} scrollEnabled={false}>
-                    <PanGestureHandler
-                        onGestureEvent={handleGestureEvent}
-                        activeOffsetX={[-80, 80]}
-                    >
+        <SafeAreaView>
+            <ScrollView>
+                <View className="w-full justify-center  items-center h-full px-4">
+                    <Image source={image.splash} style={{width:365, height:550}}/>
+                    <Image source={image.logo} style={{height: 40, width: 280}} className={"mt-7"}/>
+                </View>
 
+            </ScrollView>
+        </SafeAreaView>
 
-                        <View className="w-full justify-center items-center h-full px-4">
-                            <Link
-                                href={'./(auth)/signup'}
-                                className={'mb-16 ml-72'}
-                                style={{ color: '#006FFF'}}
-                            >
-                                Skip
-                            </Link>
-
-                            <Image source={images.houseMan} className="mb-10" style={{width:310, height: 260}}/>
-                            <View className="resize mb-7">
-                                <Text className="text-3xl text-black font-bold text-center">
-                                    Discover Properties
-                                    <Text style={{ color: '#006FFF' }}> Using The Map</Text>
-                                </Text>
-                                <Text className="font-light text-center mt-4" style={{ color: '#B9B3B3' }}>
-                                    Lorem ipsum is simply dummy text of the printing and typesetting industry.
-                                </Text>
-                            </View>
-                            <View className="flex-row justify-between mt-16 px-4 ">
-                                <View style={{ flexDirection: 'row', alignItems: 'center' ,gap:5}}>
-                                    <CircleShape color="#D2E0FF" size={5} />
-                                    <CircleShape color="#006FFF" size={7} />
-                                    <CircleShape color="#D2E0FF" size={5} />
-                                </View>
-                            </View>
-
-                        </View>
-                    </PanGestureHandler>
-                </ScrollView>
-            </SafeAreaView>
-        </GestureHandlerRootView>
     );
 }
 

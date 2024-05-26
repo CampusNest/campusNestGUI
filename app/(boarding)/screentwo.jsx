@@ -1,12 +1,9 @@
 import React, { useRef } from 'react';
-import { ScrollView, Text, View, Image, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView, PanGestureHandler, State } from 'react-native-gesture-handler';
 import images from '../../constants/images';
-import icon from '../../constants/icons';
-import NextButton from '../../components/NextButton';
 import {Link, router} from 'expo-router';
-import { navigateToSignIn, navigateToIndexPage } from '../../components/navigation/navigate';
 import { debounce } from 'lodash';
 import CircleShape from "../../components/CircleShape";
 
@@ -14,7 +11,7 @@ export default function ScreenTwo() {
     const swipeHandler = useRef(
         debounce((nativeEvent) => {
             if (nativeEvent.velocityX < -0.2) {
-                router.push(navigateToIndexPage);
+                router.push('../(boarding)/screenone');
             }
         }, 20)
     ).current;

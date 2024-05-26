@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
+import {ScrollView, StyleSheet, Text, View, Image, TouchableOpacity} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Images from "../../constants/images";
 import FormField from "../../components/FormField";
@@ -14,7 +14,7 @@ const SignUpStudent = () => {
     });
     const [isFormFilled, setIsFormFilled] = useState(false);
 
-    // useEffect to check if all fields are filled
+
     useEffect(() => {
         const { firstName, lastName, email, password } = form;
         if (firstName && lastName && email && password) {
@@ -23,6 +23,37 @@ const SignUpStudent = () => {
             setIsFormFilled(false);
         }
     }, [form]);
+
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const submit = async () => {
+        try {
+            setIsSubmitting(true);
+            const response = await fetch('http://192.168.0.196:9897/api/v1/studentRegister', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(form),
+            });
+
+            const responseText = await response.text();
+            console.log('Response Status:', response.status);
+            console.log('Response Headers:', JSON.stringify(response.headers));
+            console.log('Response Text:', responseText);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = JSON.parse(responseText);
+            console.log('Registration successful:', data);
+        } catch (error) {
+            console.error('Registration error:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
 
     return (
         <SafeAreaView>
@@ -46,6 +77,14 @@ const SignUpStudent = () => {
                         handleChangeText={(e) => setForm({ ...form, lastName: e })}
                         otherStyles='mt-4'
                     />
+                    <FormField
+                        title="Email"
+                        value={form.email}
+                        handleChangeText={(e) => setForm({ ...form, email: e })}
+                        otherStyles='mt-4'
+                        keyBoardType='email-address'
+                    />
+
 
                     <FormField
                         title="Password"
@@ -54,13 +93,6 @@ const SignUpStudent = () => {
                         otherStyles='mt-4'
                     />
 
-                    <FormField
-                        title="Email"
-                        value={form.email}
-                        handleChangeText={(e) => setForm({ ...form, email: e })}
-                        otherStyles='mt-4'
-                        keyBoardType='email-address'
-                    />
 
                     <View style={{ alignItems: "center", marginTop: 20 , flexDirection: "row" , justifyContent: "space-between"  }}>
                         <Text style={{ color: "#091130" }}>Already registered? </Text>
@@ -72,13 +104,18 @@ const SignUpStudent = () => {
                         </Link>
                     </View>
 
-                    <Link
-                        href={'../(auth)/signup'}
-                        style={[styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}
+                    <TouchableOpacity
+                        onPress={submit}
+
+                        // href={'../(auth)/signup'}
+
                         className="mt-9"
                     >
-                        SignUp
-                    </Link>
+                        <Text  style={[styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}>
+                            SignUp
+                        </Text>
+
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
         </SafeAreaView>

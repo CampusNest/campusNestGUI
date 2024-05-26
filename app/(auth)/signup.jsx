@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     },
     absoluteContainer: {
         position: 'absolute',
-        bottom: 50,
+        bottom: 25,
         width: '100%',
         alignItems: 'center',
     },

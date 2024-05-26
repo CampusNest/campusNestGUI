@@ -14,6 +14,7 @@ const RootLayout = () =>{
   <Stack.Screen name="(auth)/signup" options={{headerShown:false}}/>
   <Stack.Screen name="(auth)/signupStudent" options={{headerShown:false}}/>
   <Stack.Screen name="(auth)/signupLandlord" options={{headerShown:false}}/>
+  <Stack.Screen name="(auth)/signInStudent" options={{headerShown:false}}/>
 </Stack>
   )
 }

@@ -17,5 +17,6 @@ export default {
     home,
     enterSearch,
     searchIcon,
-
+    showEye,
+    hideEye
 }

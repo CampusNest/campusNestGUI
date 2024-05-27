@@ -2,7 +2,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import {useState} from "react";
 import {TextInput, TouchableOpacity, View,Text} from "react-native";
 
-const FormField = ({ title, value, placeholder, handleChangeText, otherStyles, ...props }) => {
+const FormField = ({ title, value, placeholder, handleChangeText, otherStyles,error, ...props }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
 
@@ -38,6 +38,7 @@ const FormField = ({ title, value, placeholder, handleChangeText, otherStyles, .
                         <FontAwesome name={!showPassword ? 'eye' : 'eye-slash'} size={24} color="black" />
                     </TouchableOpacity>
                 )}
+
             </View>
         </View>
     );

@@ -9,7 +9,7 @@ import {Link, router} from "expo-router";
 import { useNavigation } from '@react-navigation/native';
 
 
-const SignInStudent = () => {
+const SignInLandLord = () => {
     const [form, setForm] = useState({
         email: '',
         password: ''
@@ -32,7 +32,7 @@ const SignInStudent = () => {
     const submit = async () => {
         try {
             setIsSubmitting(true);
-            const response = await fetch('http://172.16.0.218:9897/api/v1/studentLogin', {
+            const response = await fetch('http://172.16.0.218:9897/api/v1/landlordLogin', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ const SignInStudent = () => {
                     <View style={{ alignItems: "center", marginTop: 20, flexDirection: "row", justifyContent: "space-between" }}>
                         <Text style={{ color: "#091130" }}>Don't have an account? </Text>
                         <Link
-                            href={'../(auth)/signupStudent'}
+                            href={'../(auth)/signupLandlord'}
                             style={{ color: "#006FFF" }}
                         >
                             Signup
@@ -184,4 +184,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default SignInStudent;
+export default SignInLandLord;

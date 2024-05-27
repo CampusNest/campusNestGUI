@@ -1,9 +1,12 @@
-import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
+import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, Modal, Button } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import Images from "../../constants/images";
 import FormField from "../../components/FormField";
 import React, { useState, useEffect } from "react";
-import { Link } from "expo-router";
+import {Link, router} from "expo-router";
+
+import { useNavigation } from '@react-navigation/native';
 
 const SignUpStudent = () => {
     const [form, setForm] = useState({
@@ -61,7 +64,10 @@ const SignUpStudent = () => {
         password: ''
     });
     const [isFormFilled, setIsFormFilled] = useState(false);
-
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const navigation = useNavigation();
 
     useEffect(() => {
         const { firstName, lastName, email, password } = form;
@@ -72,11 +78,10 @@ const SignUpStudent = () => {
         }
     }, [form]);
 
-    const [isSubmitting, setIsSubmitting] = useState(false)
     const submit = async () => {
         try {
             setIsSubmitting(true);
-            const response = await fetch('http://192.168.0.196:9897/api/v1/studentRegister', {
+            const response = await fetch('http://172.16.0.218:9897/api/v1/studentRegister', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -84,17 +89,16 @@ const SignUpStudent = () => {
                 body: JSON.stringify(form),
             });
 
-            const responseText = await response.text();
-            console.log('Response Status:', response.status);
-            console.log('Response Headers:', JSON.stringify(response.headers));
-            console.log('Response Text:', responseText);
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+
+            if (response.ok) {
+                router.push("../(auth)/signInStudent");
+            } else {
+                const responseText = await response.json();
+                setErrorMessage(responseText.error);
+                setModalVisible(true);
             }
 
-            const data = JSON.parse(responseText);
-            console.log('Registration successful:', data);
         } catch (error) {
             console.error('Registration error:', error);
         } finally {
@@ -102,11 +106,10 @@ const SignUpStudent = () => {
         }
     };
 
-
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{ flex: 1 }}>
             <ScrollView>
-                <View className={"w-full justify-center min-h-[85 vh] px-4 my-6"}>
+                <View className={"w-full justify-center min-h-[85vh] px-4 my-6"}>
                     <View style={{ alignItems: "center" }}>
                         <Image source={Images.logo} resizeMode={'contain'} className={"w-[250px] h-[52px] mt-2"} />
                     </View>
@@ -149,17 +152,13 @@ const SignUpStudent = () => {
                         otherStyles='mt-4'
                         keyBoardType='email-address'
                     />
-
-
                     <FormField
                         title="Password"
                         value={form.password}
                         handleChangeText={(e) => setForm({ ...form, password: e })}
                         otherStyles='mt-4'
                     />
-
-
-                    <View style={{ alignItems: "center", marginTop: 20 , flexDirection: "row" , justifyContent: "space-between"  }}>
+                    <View style={{ alignItems: "center", marginTop: 20, flexDirection: "row", justifyContent: "space-between" }}>
                         <Text style={{ color: "#091130" }}>Already registered? </Text>
                         <Link
                             href={'../(auth)/signInStudent'}
@@ -183,18 +182,33 @@ const SignUpStudent = () => {
 }
                     <TouchableOpacity
                         onPress={submit}
-
-                        // href={'../(auth)/signup'}
-
                         className="mt-9"
                     >
-                        <Text  style={[styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}>
+                        <Text style={[styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}>
                             SignUp
                         </Text>
-
                     </TouchableOpacity>
                 </View>
             </ScrollView>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    setModalVisible(!modalVisible);
+                }}
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalText}>{errorMessage}</Text>
+                        <Button
+                            title="Close"
+                            onPress={() => setModalVisible(!modalVisible)}
+                        />
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 }
@@ -216,7 +230,40 @@ const styles = StyleSheet.create({
     greyButton: {
         backgroundColor: "grey",
         color: "#fff",
-    }
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22,
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: "center",
+        color: "red",
+    },
+    absolute: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
+    },
 });
 
 export default SignUpStudent;

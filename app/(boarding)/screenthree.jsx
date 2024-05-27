@@ -6,6 +6,7 @@ import {Link, router} from 'expo-router';
 import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
 import { debounce } from 'lodash';
 import CircleShape from "../../components/CircleShape";
+import {useNavigation} from "@react-navigation/native";
 
 export default function Screenthree() {
     const swipeHandler = useRef(
@@ -22,6 +23,8 @@ export default function Screenthree() {
         swipeHandler(event.nativeEvent);
     };
 
+
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView className="bg-white h-full">
@@ -32,6 +35,13 @@ export default function Screenthree() {
                     >
                         <View className="w-full justify-center items-center h-full px-4">
 
+                            <Link
+                                href={'../(auth)/signup'}
+                                className={'mb-16 ml-72'}
+                                style={{ color: '#006FFF'}}
+                            >
+                                Skip
+                            </Link>
 
                             <Image source={images.man2} className="mt-96"  style={{width:310, height: 290,borderRadius: 20,marginTop:530}}/>
                             <View className="resize mb-24">
@@ -51,7 +61,7 @@ export default function Screenthree() {
                                 </View>
 
                                 <Link
-                                    href={'../(auth)/signup'}
+                                    href={'/home'}
                                     style={styles.container}
                                     className="mt-9"
                                 >

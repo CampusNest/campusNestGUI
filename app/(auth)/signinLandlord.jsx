@@ -9,6 +9,7 @@ import {Link, router} from "expo-router";
 import { useNavigation } from '@react-navigation/native';
 
 
+
 const SignInLandLord = () => {
     const [form, setForm] = useState({
         email: '',
@@ -32,7 +33,7 @@ const SignInLandLord = () => {
     const submit = async () => {
         try {
             setIsSubmitting(true);
-            const response = await fetch('http://172.16.0.218:9897/api/v1/landlordLogin', {
+            const response = await fetch('http://localhost:9897/api/v1/landlordLogin', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

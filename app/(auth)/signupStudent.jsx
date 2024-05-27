@@ -81,7 +81,7 @@ const SignUpStudent = () => {
     const submit = async () => {
         try {
             setIsSubmitting(true);
-            const response = await fetch('http://172.16.0.218:9897/api/v1/studentRegister', {
+            const response = await fetch('http://localhost/api/v1/studentRegister', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

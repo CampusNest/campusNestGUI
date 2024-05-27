@@ -61,7 +61,7 @@ export default function Screenthree() {
                                 </View>
 
                                 <Link
-                                    href={'/home'}
+                                    href={'(auth)/signup'}
                                     style={styles.container}
                                     className="mt-9"
                                 >

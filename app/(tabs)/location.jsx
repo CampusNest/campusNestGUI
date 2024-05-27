@@ -2,7 +2,7 @@ import {StyleSheet,Text,View} from "react-native";
 import {StatusBar} from "react-native-web";
 
 
-const Create = () =>{
+const Location = () =>{
     return(
         <View style={styles.container}>
             <Text>Profile c</Text>
@@ -20,4 +20,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Create;
+export default Location;

@@ -21,7 +21,7 @@ const FormField = ({ title, value, placeholder, handleChangeText, otherStyles,er
                 }}
             >
                 <TextInput
-                    className={"text-black text-base flex-1"} // Modified styling
+                    className={"text-black text-base flex-1"}
                     value={value}
                     placeholder={placeholder}
                     placeholderTextColor={"#6A6A6A"}
@@ -32,6 +32,12 @@ const FormField = ({ title, value, placeholder, handleChangeText, otherStyles,er
                     style={{ height: '100%' }}
                     {...props}
                 />
+
+                {title === 'New Password' && (
+                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ padding: 8 }}>
+                        <FontAwesome name={!showPassword ? 'eye' : 'eye-slash'} size={24} color="black" />
+                    </TouchableOpacity>
+                )}
 
                 {title === 'Password' && (
                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ padding: 8 }}>

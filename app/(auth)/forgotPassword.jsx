@@ -1,14 +1,10 @@
 import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, Modal, Button } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import Images from "../../constants/images";
 import FormField from "../../components/FormField";
 import React, { useState, useEffect } from "react";
-import {router} from "expo-router";
-
+import { router } from "expo-router";
 import { useNavigation } from '@react-navigation/native';
-
-
 
 const ForgotPassword = () => {
     const [form, setForm] = useState({
@@ -19,10 +15,11 @@ const ForgotPassword = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [successModalVisible, setSuccessModalVisible] = useState(false);
     const navigation = useNavigation();
 
     useEffect(() => {
-        const {  email, password } = form;
+        const { email, password } = form;
         if (email && password) {
             setIsFormFilled(true);
         } else {
@@ -41,16 +38,17 @@ const ForgotPassword = () => {
                 body: JSON.stringify(form),
             });
 
-
-
             if (response.ok) {
-                router.push("../(auth)/signInStudent");
+                setSuccessModalVisible(true);
+                setTimeout(() => {
+                    setSuccessModalVisible(false);
+                    router.push("../(auth)/signInStudent");
+                }, 2000);
             } else {
                 const responseText = await response.json();
                 setErrorMessage(responseText.error);
                 setModalVisible(true);
             }
-
         } catch (error) {
             console.error('Registration error:', error);
         } finally {
@@ -82,7 +80,6 @@ const ForgotPassword = () => {
                         otherStyles='mt-4'
                     />
 
-
                     <TouchableOpacity
                         onPress={submit}
                         className="mt-9"
@@ -91,8 +88,6 @@ const ForgotPassword = () => {
                             Reset
                         </Text>
                     </TouchableOpacity>
-
-
                 </View>
             </ScrollView>
 
@@ -111,6 +106,21 @@ const ForgotPassword = () => {
                             title="Close"
                             onPress={() => setModalVisible(!modalVisible)}
                         />
+                    </View>
+                </View>
+            </Modal>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={successModalVisible}
+                onRequestClose={() => {
+                    setSuccessModalVisible(!successModalVisible);
+                }}
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.successText}>Reset Successful</Text>
                     </View>
                 </View>
             </Modal>
@@ -161,6 +171,12 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: "center",
         color: "red",
+    },
+    successText: {
+        marginBottom: 15,
+        textAlign: "center",
+        color: "green",
+        fontWeight: "bold",
     },
     absolute: {
         position: "absolute",

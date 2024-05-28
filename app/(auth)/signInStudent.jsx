@@ -32,7 +32,7 @@ const SignInStudent = () => {
     const submit = async () => {
         try {
             setIsSubmitting(true);
-            const response = await fetch('http://localhost:9897/api/v1/studentLogin', {
+            const response = await fetch('http://172.16.0.218:9897/api/v1/studentLogin', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

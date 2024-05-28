@@ -31,7 +31,7 @@ const SignUpLandlord = () => {
     const submit = async () => {
         try {
             setIsSubmitting(true);
-            const response = await fetch('http://localhost:9897/api/v1/landlordRegister', {
+            const response = await fetch('http://172.16.0.218:9897/api/v1/landlordRegister', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ const SignUpLandlord = () => {
 
 
             if (response.ok) {
-                router.push("../(auth)/signinLandlord");
+                router.push("/home");
             } else {
                 const responseText = await response.json();
                 setErrorMessage(responseText.error);

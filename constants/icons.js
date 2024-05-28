@@ -9,7 +9,7 @@ import enterSearch from "../assets/icons/enter.png"
 import searchIcon from "../assets/icons/searchIcon.svg"
 export default {
     showEye,
-    hideEye
+    hideEye,
     campusIcon,
     profile,
     location,
@@ -17,6 +17,5 @@ export default {
     home,
     enterSearch,
     searchIcon,
-    showEye,
-    hideEye
+
 }

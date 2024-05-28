@@ -39,7 +39,6 @@ const SignUpLandlord = () => {
                 body: JSON.stringify(form),
             });
 
-
             if (response.ok) {
                 router.push("/home");
             } else {

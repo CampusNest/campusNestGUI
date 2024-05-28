@@ -1,5 +1,21 @@
-import blueArrow from "../assets/images/blueArr.png"
-import whiteArrow from "../assets/images/whiteArr.png"
-import circ2 from "../assets/images/circ2.png"
-import circ1 from "../assets/images/cir1.png"
-export default {blueArrow,whiteArrow,circ2,circ1}
+import showEye from "../assets/images/eyeShow.png"
+import hideEye from "../assets/images/eyeH.png"
+import campusIcon from "../assets/images/Campus nest logo icon.png"
+import profile from "../assets/icons/profile.png";
+import location from "../assets/icons/location.png";
+import bookmark from "../assets/icons/bookmark.png";
+import home from "../assets/icons/home.png";
+import enterSearch from "../assets/icons/enter.png"
+import searchIcon from "../assets/icons/searchIcon.svg"
+export default {
+    showEye,
+    hideEye,
+    campusIcon,
+    profile,
+    location,
+    bookmark,
+    home,
+    enterSearch,
+    searchIcon,
+
+}

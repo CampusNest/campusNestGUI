@@ -1,52 +1,30 @@
+import React, {useEffect} from 'react';
+import { ScrollView, View, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {useRouter} from 'expo-router';
+import image from "../constants/images"
 
-import {ScrollView, Text, View,Image} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
-import images from "../constants/images";
-import icon from "../constants/icons"
-import GoBackButton from "../components/GoBackButton";
-import NextButton from "../components/NextButton";
-import {Redirect,router} from "expo-router";
+export default function Index() {
+    const router = useRouter();
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            router.push('./(boarding)/screentwo');
+        }, 3000);
 
+        return () => clearTimeout(timer);
+    }, [router]);
+    return (
+        <SafeAreaView>
+            <ScrollView>
+                <View className="w-full justify-center  items-center h-full px-4">
+                    <Image source={image.splash} style={{width:365, height:550}}/>
+                    <Image source={image.logo} style={{height: 40, width: 280}} className={"mt-7"}/>
+                </View>
 
-export default function App(){
-    return(
-        <SafeAreaView className="bg-white h-full">
-<ScrollView contentContainerStyle={{height:'100%'}}>
-<View className = "w-full justify-center items-center h-full px-4">
-<Image source={images.girl} className="mb-10"/>
-
-    <View className="resize mb-7">
-<Text className="text-3xl text-black font-bold text-center">
-    Discover Properties <Text style={{color:"#006FFF"}}>Using The Map</Text>
-</Text>
-
-        <Text className="font-light text-center mt-4" style={{color:"#B9B3B3"}}>
-            Lorem ipsum is simply dummy test of the printing and typesetting industry </Text>
-    </View>
-    <View className="flex-row justify-between mt-16 px-4">
-        <GoBackButton
-        handlePress={() =>{router.push('./(boarding)/screentwo')}}
-        />
-        <View style={{ flexDirection: 'column', alignItems: 'center'}}>
-            <Image source={icon.circ2} style={{ marginTop: 10}}/>
-        </View>
-        <NextButton/>
-
-        <View style={{ position: 'absolute', right: 15}}>
-            <Text className={"mt-14"} style={{color:"#006FFF"}}>Skip</Text>
-        </View>
-    </View>
-
-
-
-</View>
-
-
-
-</ScrollView>
+            </ScrollView>
         </SafeAreaView>
+
     );
 }
-
 

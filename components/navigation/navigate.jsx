@@ -20,3 +20,4 @@ export const navigateToSignIn = () => {
 export const navigateToIndexPage = () => {
     router.push('../../app/index');
 };
+

@@ -40,11 +40,10 @@ const SignUpLandlord = () => {
             setIsFormFilled(false);
         }
     }, [form]);
-    const apiBaseUrl = 'http://172.16.0.155:9897/api/v1/landlordRegister';
+    const apiBaseUrl = 'http://172.16.0.56:8080/api/v1/landlordRegister';
 
     const axiosInstance = axios.create({
         baseURL: apiBaseUrl,
-        timeout: 5000,
         headers: {
             'Content-Type': 'application/json'
         }

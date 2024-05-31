@@ -1,13 +1,14 @@
 
 
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, Image, Modal, TouchableOpacity } from 'react-native';
+import {ScrollView, StyleSheet, Text, View, Image, Modal, TouchableOpacity, Linking} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import hos from '../../assets/images/sketch.png';
 import { Header } from '../../components/Header';
 import navigation from "../../components/Navigation";
+import axios from "axios";
 
 const Home = () => {
     const [apartmentData, setApartmentData] = useState([]);
@@ -28,7 +29,7 @@ const Home = () => {
                     return;
                 }
 
-                const response = await fetch('http://localhost:8080/api/v1/apartment/allApartment', {
+                const response = await fetch('http://172.16.0.56:8080/api/v1/apartment/allApartment', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -59,15 +60,29 @@ const Home = () => {
         setModalVisible(true);
     };
 
-    const handleRentButtonPress = async () => {
-        const userId = await AsyncStorage.getItem('user_id');
-        if (userId && selectedApartment) {
-            navigation.navigate('MakePaymentComponent', {
-                user_id: userId,
-                apartment_id: selectedApartment.id,
-            });
+    const handleRentButtonPress = async (selected) => {
+        let url = "http://172.16.0.56:8080/api/v1/payment/payForRent";
+        const user = await AsyncStorage.getItem('user_id');
+        const axiosInstance = axios.create({
+            baseURL: url,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
 
-        }
+                const payload = {
+                    apartmentId : selected,
+                    userId : user ,
+                };
+                const response = await axiosInstance.post(url,payload)
+                 if (response.data){
+                     await Linking.openURL(response.data.data)
+                 }
+
+
+
+
+    }
 
         return (
             <SafeAreaView style={styles.container}>
@@ -131,7 +146,7 @@ const Home = () => {
 
                                     <View style={{display: "flex", flexDirection: "row", gap: 10}}>
                                         <TouchableOpacity style={styles.rentButton}
-                                                          onPress={() => handleRentButtonPress}>
+                                                          onPress={() => handleRentButtonPress(selectedApartment.id)}>
                                             <Text style={styles.rentButtonText}>Rent</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity style={styles.backButton}
@@ -224,7 +239,7 @@ const Home = () => {
             fontWeight: 'bold',
         },
     });
-}
+
 
 export default Home;
 

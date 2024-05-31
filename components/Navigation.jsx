@@ -4,7 +4,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SignUpLandlord from '../app/(auth)/signupLandlord';
-import Home2 from '../app/(tabs2)/home2';
 import LoginPage from '../app/(auth)/signinLandlord';
 
 const Stack = createStackNavigator();

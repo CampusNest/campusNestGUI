@@ -1,18 +1,28 @@
-import {useEffect} from "react";
+import React, {useEffect} from "react";
 import {useRoute} from "@react-navigation/native";
+import axios from "axios";
+import {SafeAreaView} from "react-native-safe-area-context";
+import {Image} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const MakePaymentComponent = () => {
 
     const route = useRoute();
-    const { user_id, apartment_id } = route.params;
-    let url = "http://localhost:8080/api/v1/payment/payForRent";
+
+
 
     useEffect(() =>{
 
         const fetchPayment = async  () =>{
-
-            const response = await fetch('')
+            const payload = {
+                apartmentId : apartment_id,
+                userId : user_id
+            };
+            const response = await axios.post(url,payload)
+            console.log(response.data)
         }
+
+        fetchPayment()
     },[]);
 
 }

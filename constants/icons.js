@@ -7,6 +7,8 @@ import bookmark from "../assets/icons/bookmark.png";
 import home from "../assets/icons/home.png";
 import enterSearch from "../assets/icons/enter.png"
 import searchIcon from "../assets/icons/searchIcon.svg"
+import house from "../assets/images/sketch.png"
+import exit from "../assets/images/icons8-exit-50.png"
 export default {
     showEye,
     hideEye,
@@ -17,5 +19,7 @@ export default {
     home,
     enterSearch,
     searchIcon,
+    house,
+    exit
 
 }

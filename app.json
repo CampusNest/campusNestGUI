@@ -24,6 +24,7 @@
       "permissions": [
         "INTERNET"
       ]
+
     },
     "web": {
       "bundler": "metro",

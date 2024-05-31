@@ -1,4 +1,14 @@
-import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, Modal, Button } from "react-native";
+import {
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    TouchableOpacity,
+    Modal,
+    Button,
+    ActivityIndicator
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Images from "../../constants/images";
 import FormField from "../../components/FormField";
@@ -30,7 +40,7 @@ const ForgotPassword = () => {
     const submit = async () => {
         try {
             setIsSubmitting(true);
-            const response = await fetch('http://172.16.0.218:9897/api/v1/studentPassword', {
+            const response = await fetch('http://172.16.0.155:9897/api/v1/studentPassword', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,10 +93,15 @@ const ForgotPassword = () => {
                     <TouchableOpacity
                         onPress={submit}
                         className="mt-9"
+                        disabled={isSubmitting}
                     >
-                        <Text style={[styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}>
-                            Reset
-                        </Text>
+                        {isSubmitting ? (
+                            <ActivityIndicator size="small" color="#fff" style={[styles.loadingIndicator,styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}/>
+                        ) : (
+                            <Text style={[styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}>
+                                Reset
+                            </Text>
+                        )}
                     </TouchableOpacity>
                 </View>
             </ScrollView>

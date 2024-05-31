@@ -1,4 +1,260 @@
-import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, Modal, Button } from "react-native";
+// import {
+//     ScrollView,
+//     StyleSheet,
+//     Text,
+//     View,
+//     Image,
+//     TouchableOpacity,
+//     Modal,
+//     Button,
+//     ActivityIndicator
+// } from "react-native";
+// import { SafeAreaView } from "react-native-safe-area-context";
+//
+// import Images from "../../constants/images";
+// import FormField from "../../components/FormField";
+// import React, { useState, useEffect } from "react";
+// import {Link, router} from "expo-router";
+//
+// import { useNavigation } from '@react-navigation/native';
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+// import {useAuth} from "../../components/AuthContent";
+// import icon from "../../constants/icons";
+//
+//
+// const SignInLandLord = () => {
+//     const [form, setForm] = useState({
+//         email: '',
+//         password: ''
+//     });
+//     const [isFormFilled, setIsFormFilled] = useState(false);
+//     const [errorMessage, setErrorMessage] = useState('');
+//     const [isSubmitting, setIsSubmitting] = useState(false);
+//     const [modalVisible, setModalVisible] = useState(false);
+//     // const navigation = useNavigation();
+//     // const [setAuth] = useAuth();
+//     useEffect(() => {
+//         const {  email, password } = form;
+//         if (email && password) {
+//             setIsFormFilled(true);
+//         } else {
+//             setIsFormFilled(false);
+//         }
+//     }, [form]);
+//
+//     const submit = async () => {
+//         try {
+//             setIsSubmitting(true);
+//             const response = await fetch('http://172.16.0.155:9897/api/v1/landlordLogin', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                 },
+//                 body: JSON.stringify(form),
+//             });
+//
+//             const responseText = await response.json();
+//
+//             if (response.ok) {
+//                 await AsyncStorage.setItem("access_token", responseText.access_token);
+//                 // setAuth(responseText.access_token)
+//                 // router.push("/home2");
+//
+//
+//                 const profileResponse = await fetch('http://172.16.0.155:9897/api/v1/landlordProfile', {
+//                     method: 'GET',
+//                     headers: {
+//                         'Authorization': `Bearer ${responseText.access_token}`,
+//                         'Content-Type': 'application/json',
+//                     },
+//                 });
+//
+//                 const profileData = await profileResponse.json();
+//
+//                 if (profileResponse.ok) {
+//                     await AsyncStorage.setItem("first_name", profileData.firstName);
+//                     await AsyncStorage.setItem("last_name", profileData.lastName);
+//                     await AsyncStorage.setItem("user_id",profileData.id.toString());
+//                     await AsyncStorage.setItem("email", profileData.email);
+//
+//                     if(profileData.role === "LANDLORD"){
+//                         router.push("/home2");}
+//                     else{
+//                     setErrorMessage("you do not have access to this account as a student")}
+//
+//                 } else {
+//                     setErrorMessage(profileData.error);
+//                     setModalVisible(true);
+//                 }
+//
+//             } else {
+//                 setErrorMessage(responseText.error);
+//                 setModalVisible(true);
+//             }
+//
+//
+//
+//         } catch (error) {
+//             console.error('Registration error:', error);
+//         } finally {
+//             setIsSubmitting(false);
+//         }
+//     };
+//
+//     return (
+//         <SafeAreaView style={{ flex: 1 }}>
+//             <ScrollView>
+//                 <View className={"w-full justify-center min-h-[85vh] px-4 my-6"}>
+//                     <Link href={"../(auth)/signup"}>
+//                         <View>
+//                             <Image source={icon.exit} style={{width: 25, height:25}} className={"ml-72 mb-4"}/>
+//
+//                         </View>
+//
+//                     </Link>
+//                     <View style={{ alignItems: "center" }}>
+//                         <Image source={Images.logo} resizeMode={'contain'} className={"w-[250px] h-[52px] mt-2"} />
+//                     </View>
+//
+//                     <Text className={"mt-5"} style={{ fontWeight: "bold", fontSize: 20, color: "#091130" }}>Sign In</Text>
+//
+//                     <FormField
+//                         title="Email"
+//                         value={form.email.trim()}
+//                         handleChangeText={(e) => setForm({ ...form, email: e })}
+//                         otherStyles='mt-7'
+//                         keyBoardType='email-address'
+//                     />
+//                     <FormField
+//                         title="Password"
+//                         value={form.password.trim()}
+//                         handleChangeText={(e) => setForm({ ...form, password: e })}
+//                         otherStyles='mt-4'
+//                     />
+//                     <View style={{ alignItems: "center", marginTop: 20, flexDirection: "row", justifyContent: "space-between" }}>
+//                         <Text style={{ color: "#091130" }}>Don't have an account? </Text>
+//                         <Link
+//                             href={'../(auth)/signupLandlord'}
+//                             style={{ color: "#006FFF" }}
+//                         >
+//                             Signup
+//                         </Link>
+//                     </View>
+//
+//                     <TouchableOpacity
+//                         onPress={submit}
+//                         className="mt-9"
+//                         disabled={isSubmitting}
+//                     >
+//                         {isSubmitting ? (
+//                             <ActivityIndicator size="small" color="#fff" style={[styles.loadingIndicator,styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}/>
+//                         ) : (
+//                             <Text style={[styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}>
+//                                 SignIn
+//                             </Text>
+//                         )}
+//                     </TouchableOpacity>
+//
+//
+//                     <Link href={"../(auth)/forgotPassword"} style={styles.forgot}>
+//                         forgot password?
+//                     </Link>
+//
+//                 </View>
+//             </ScrollView>
+//
+//             <Modal
+//                 animationType="slide"
+//                 transparent={true}
+//                 visible={modalVisible}
+//                 onRequestClose={() => {
+//                     setModalVisible(!modalVisible);
+//                 }}
+//             >
+//                 <View style={styles.centeredView}>
+//                     <View style={styles.modalView}>
+//                         <Text style={styles.modalText}>{errorMessage}</Text>
+//                         <Button
+//                             title="Close"
+//                             onPress={() => setModalVisible(!modalVisible)}
+//                         />
+//                     </View>
+//                 </View>
+//             </Modal>
+//         </SafeAreaView>
+//     );
+// }
+//
+// const styles = StyleSheet.create({
+//     container: {
+//         width: 324,
+//         height: 50,
+//         borderRadius: 50,
+//         textAlign: "center",
+//         fontSize: 18,
+//         paddingTop: 12.5,
+//         marginBottom: 20
+//     },
+//     blueButton: {
+//         backgroundColor: "#006FFF",
+//         color: "#fff",
+//     },
+//     greyButton: {
+//         backgroundColor: "grey",
+//         color: "#fff",
+//     },
+//     centeredView: {
+//         flex: 1,
+//         justifyContent: "center",
+//         alignItems: "center",
+//         marginTop: 22,
+//     },
+//     modalView: {
+//         margin: 20,
+//         backgroundColor: "white",
+//         borderRadius: 20,
+//         padding: 35,
+//         alignItems: "center",
+//         shadowColor: "#000",
+//         shadowOffset: {
+//             width: 0,
+//             height: 2
+//         },
+//         shadowOpacity: 0.25,
+//         shadowRadius: 4,
+//         elevation: 5
+//     },
+//     modalText: {
+//         marginBottom: 15,
+//         textAlign: "center",
+//         color: "red",
+//     },
+//     absolute: {
+//         position: "absolute",
+//         top: 0,
+//         left: 0,
+//         bottom: 0,
+//         right: 0,
+//     },
+//     forgot:{
+//         color: "red"
+//     }
+// });
+//
+// export default SignInLandLord;
+
+
+import {
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    TouchableOpacity,
+    Modal,
+    Button,
+    ActivityIndicator
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Images from "../../constants/images";
@@ -7,6 +263,9 @@ import React, { useState, useEffect } from "react";
 import {Link, router} from "expo-router";
 
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useAuth} from "../../components/AuthContent";
+import icon from "../../constants/icons";
 
 
 
@@ -19,8 +278,8 @@ const SignInLandLord = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
-    const navigation = useNavigation();
-
+    // const navigation = useNavigation();
+    // const [setAuth] = useAuth();
     useEffect(() => {
         const {  email, password } = form;
         if (email && password) {
@@ -33,7 +292,7 @@ const SignInLandLord = () => {
     const submit = async () => {
         try {
             setIsSubmitting(true);
-            const response = await fetch('http://172.16.0.218:9897/api/v1/landlordLogin', {
+            const response = await fetch('http:/172.16.0.155:9897/api/v1/landlordLogin', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -41,15 +300,51 @@ const SignInLandLord = () => {
                 body: JSON.stringify(form),
             });
 
-
+            const responseText = await response.json();
 
             if (response.ok) {
-                router.push("/home");
+                await AsyncStorage.setItem("user_id", responseText.id.toString());
+
+
+                // setAuth(responseText.access_token)
+                // router.push("/home2");
+
+
+                const profileResponse = await fetch(`http://172.16.0.155:9897/api/v1/landlordProfile/${responseText.id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const profileData = await profileResponse.json();
+
+                if (profileResponse.ok) {
+                    await AsyncStorage.setItem("first_name", profileData.firstName);
+                    await AsyncStorage.setItem("last_name", profileData.lastName);
+                    await AsyncStorage.setItem("user_id",profileData.id.toString());
+                    await AsyncStorage.setItem("email", profileData.email);
+
+                    if (profileData.role === "LANDLORD"){
+                        router.push("/home2");
+                    }
+                    else {
+                        router.push("/home")
+                    }
+
+                    console.log(profileData.role)
+
+                } else {
+                    setErrorMessage(profileData.error);
+                    setModalVisible(true);
+                }
+
             } else {
-                const responseText = await response.json();
                 setErrorMessage(responseText.error);
                 setModalVisible(true);
             }
+
+
 
         } catch (error) {
             console.error('Registration error:', error);
@@ -62,6 +357,13 @@ const SignInLandLord = () => {
         <SafeAreaView style={{ flex: 1 }}>
             <ScrollView>
                 <View className={"w-full justify-center min-h-[85vh] px-4 my-6"}>
+                    <Link href={"../(auth)/signup"}>
+                        <View>
+                            <Image source={icon.exit} style={{width: 25, height:25}} className={"ml-72 mb-4"}/>
+
+                        </View>
+
+                    </Link>
                     <View style={{ alignItems: "center" }}>
                         <Image source={Images.logo} resizeMode={'contain'} className={"w-[250px] h-[52px] mt-2"} />
                     </View>
@@ -70,14 +372,14 @@ const SignInLandLord = () => {
 
                     <FormField
                         title="Email"
-                        value={form.email}
+                        value={form.email.trim()}
                         handleChangeText={(e) => setForm({ ...form, email: e })}
                         otherStyles='mt-7'
                         keyBoardType='email-address'
                     />
                     <FormField
                         title="Password"
-                        value={form.password}
+                        value={form.password.trim()}
                         handleChangeText={(e) => setForm({ ...form, password: e })}
                         otherStyles='mt-4'
                     />
@@ -94,11 +396,17 @@ const SignInLandLord = () => {
                     <TouchableOpacity
                         onPress={submit}
                         className="mt-9"
+                        disabled={isSubmitting}
                     >
-                        <Text style={[styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}>
-                            SignIn
-                        </Text>
+                        {isSubmitting ? (
+                            <ActivityIndicator size="small" color="#fff" style={[styles.loadingIndicator,styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}/>
+                        ) : (
+                            <Text style={[styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}>
+                                SignIn
+                            </Text>
+                        )}
                     </TouchableOpacity>
+
 
                     <Link href={"../(auth)/forgotPassword"} style={styles.forgot}>
                         forgot password?
@@ -186,3 +494,4 @@ const styles = StyleSheet.create({
 });
 
 export default SignInLandLord;
+

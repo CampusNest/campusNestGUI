@@ -315,7 +315,7 @@ const SignUpStudent = () => {
 
     const handleWelcomeModalClose = () => {
         setWelcomeModalVisible(false);
-        router.push("/home2");
+        router.push("/home");
     };
 
     return (

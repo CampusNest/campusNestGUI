@@ -55,8 +55,8 @@ const ForgotPassword = () => {
                     router.push("../(auth)/signInStudent");
                 }, 2000);
             } else {
-                const responseText = await response.json();
-                setErrorMessage(responseText.error);
+                const responseText = await response.text();
+                setErrorMessage(responseText);
                 setModalVisible(true);
             }
         } catch (error) {

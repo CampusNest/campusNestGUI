@@ -7,7 +7,7 @@ import { router } from "expo-router";
 const AuthLayout = () => {
     const handleSubmit = async () => {
         await AsyncStorage.clear();
-                router.push("../(auth)/signup")
+                router.push("../(auth)/signInStudent")
 
     };
 

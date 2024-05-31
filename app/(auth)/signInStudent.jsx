@@ -62,7 +62,7 @@ const SignInStudent = () => {
                 // router.push("/home2");
 
 
-                const profileResponse = await fetch(`http://172.16.0.155:9897/api/v1/studentProfile/${responseText.id}`, {
+                const profileResponse = await fetch(`http://localhost:8080/api/v1/studentProfile/${responseText.id}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

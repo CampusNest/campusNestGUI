@@ -7,7 +7,7 @@ const RootLayout = () =>{
 
   return (
 <Stack>
-    <Stack.Screen name="index" options={{headerShown:false}}/>
+  <Stack.Screen name="index" options={{headerShown:false}}/>
   <Stack.Screen name="(boarding)/screentwo" options={{headerShown:false}}/>
   <Stack.Screen name="(boarding)/screenthree" options={{headerShown:false}}/>
   <Stack.Screen name="(boarding)/screenone" options={{headerShown:false}}/>
@@ -19,6 +19,8 @@ const RootLayout = () =>{
   <Stack.Screen name="(auth)/forgotPassword" options={{headerShown:false}}/>
   <Stack.Screen name="(mainPage)/pickApartment" options={{headerShown:false}}/>
   <Stack.Screen name="(tabs)" options={{headerShown:false}}/>
+  <Stack.Screen name="(rentingApartmentDone)/rentalProcessDone" options={{headerShown:false}}/>
+  <Stack.Screen name="(receipt)/receipt" options={{headerShown:false}}/>
 </Stack>
   )
 }

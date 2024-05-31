@@ -13,16 +13,21 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSDocumentsUsageDescription": "This app needs access to the document directory to save and share PDFs.",
+        "NSPhotoLibraryAddUsageDescription": "This app needs access to the photo library to save PDFs.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to the photo library to share PDFs."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-
       "permissions": [
-        "INTERNET"
+        "INTERNET",
+        "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"
       ]
     },
     "web": {

@@ -18,7 +18,9 @@ const RootLayout = () =>{
   <Stack.Screen name="(auth)/signinLandlord" options={{headerShown:false}}/>
   <Stack.Screen name="(auth)/forgotPassword" options={{headerShown:false}}/>
   <Stack.Screen name="(mainPage)/pickApartment" options={{headerShown:false}}/>
-  <Stack.Screen name="(tabs)" options={{headerShown:false}}/>
+  <Stack.Screen name="(auth)/forgotLandlordPassword" options={{headerShown:false}}/>
+  <Stack.Screen name="(tab)" options={{headerShown:false}}/>
+  <Stack.Screen name="(tab2)" options={{headerShown:false}}/>
   <Stack.Screen name="(rentingApartmentDone)/rentalProcessDone" options={{headerShown:false}}/>
   <Stack.Screen name="(receipt)/receipt" options={{headerShown:false}}/>
 </Stack>

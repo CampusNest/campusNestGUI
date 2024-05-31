@@ -52,7 +52,7 @@ export default function Screenthree() {
                                     Lorem ipsum is simply dummy text of the printing and typesetting industry
                                 </Text>
                             </View>
-                            <View className="mb-96 px-4 "  style={{ alignItems: 'center',marginBottom:500 }}>
+                            <View className="mb-96 px-4 "  style={{ alignItems: 'center',marginBottom:570 }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' ,gap:5}}>
                                     <CircleShape color="#D2E0FF" size={5} />
                                     <CircleShape color="#D2E0FF" size={5} />

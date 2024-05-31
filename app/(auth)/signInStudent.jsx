@@ -1,4 +1,14 @@
-import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, Modal, Button } from "react-native";
+import {
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    TouchableOpacity,
+    Modal,
+    Button,
+    ActivityIndicator
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Images from "../../constants/images";
@@ -7,6 +17,8 @@ import React, { useState, useEffect } from "react";
 import {Link, router} from "expo-router";
 
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import icon from "../../constants/icons"
 
 
 const SignInStudent = () => {
@@ -18,8 +30,8 @@ const SignInStudent = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
-    const navigation = useNavigation();
-
+    // const navigation = useNavigation();
+    // const [setAuth] = useAuth();
     useEffect(() => {
         const {  email, password } = form;
         if (email && password) {
@@ -32,7 +44,7 @@ const SignInStudent = () => {
     const submit = async () => {
         try {
             setIsSubmitting(true);
-            const response = await fetch('http://172.16.0.218:9897/api/v1/studentLogin', {
+            const response = await fetch('http://172.16.0.155:9897/api/v1/studentLogin', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -40,15 +52,51 @@ const SignInStudent = () => {
                 body: JSON.stringify(form),
             });
 
-
+            const responseText = await response.json();
 
             if (response.ok) {
-                router.push("/home");
+                await AsyncStorage.setItem("user_id", responseText.id.toString());
+
+
+                // setAuth(responseText.access_token)
+                // router.push("/home2");
+
+
+                const profileResponse = await fetch(`http://172.16.0.155:9897/api/v1/studentProfile/${responseText.id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const profileData = await profileResponse.json();
+
+                if (profileResponse.ok) {
+                    await AsyncStorage.setItem("first_name", profileData.firstName);
+                    await AsyncStorage.setItem("last_name", profileData.lastName);
+                    await AsyncStorage.setItem("user_id",profileData.id.toString());
+                    await AsyncStorage.setItem("email", profileData.email);
+
+                    if (profileData.role === "STUDENT"){
+                        router.push("/home");
+                    }
+                    else {
+                        router.push("/home2")
+                    }
+
+                    console.log(profileData.role)
+
+                } else {
+                    setErrorMessage(profileData.error);
+                    setModalVisible(true);
+                }
+
             } else {
-                const responseText = await response.json();
                 setErrorMessage(responseText.error);
                 setModalVisible(true);
             }
+
+
 
         } catch (error) {
             console.error('Registration error:', error);
@@ -61,6 +109,13 @@ const SignInStudent = () => {
         <SafeAreaView style={{ flex: 1 }}>
             <ScrollView>
                 <View className={"w-full justify-center min-h-[85vh] px-4 my-6"}>
+                    <Link href={"../(auth)/signup"}>
+                        <View>
+                            <Image source={icon.exit} style={{width: 25, height:25}} className={"ml-72 mb-4"}/>
+
+                        </View>
+
+                    </Link>
                     <View style={{ alignItems: "center" }}>
                         <Image source={Images.logo} resizeMode={'contain'} className={"w-[250px] h-[52px] mt-2"} />
                     </View>
@@ -69,21 +124,21 @@ const SignInStudent = () => {
 
                     <FormField
                         title="Email"
-                        value={form.email}
+                        value={form.email.trim()}
                         handleChangeText={(e) => setForm({ ...form, email: e })}
                         otherStyles='mt-7'
                         keyBoardType='email-address'
                     />
                     <FormField
                         title="Password"
-                        value={form.password}
+                        value={form.password.trim()}
                         handleChangeText={(e) => setForm({ ...form, password: e })}
                         otherStyles='mt-4'
                     />
                     <View style={{ alignItems: "center", marginTop: 20, flexDirection: "row", justifyContent: "space-between" }}>
                         <Text style={{ color: "#091130" }}>Don't have an account? </Text>
                         <Link
-                            href={'../(auth)/signupStudent'}
+                            href={'../(auth)/signupLandlord'}
                             style={{ color: "#006FFF" }}
                         >
                             Signup
@@ -93,11 +148,17 @@ const SignInStudent = () => {
                     <TouchableOpacity
                         onPress={submit}
                         className="mt-9"
+                        disabled={isSubmitting}
                     >
-                        <Text style={[styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}>
-                            SignIn
-                        </Text>
+                        {isSubmitting ? (
+                            <ActivityIndicator size="small" color="#fff" style={[styles.loadingIndicator,styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}/>
+                        ) : (
+                            <Text style={[styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}>
+                                SignIn
+                            </Text>
+                        )}
                     </TouchableOpacity>
+
 
                     <Link href={"../(auth)/forgotPassword"} style={styles.forgot}>
                         forgot password?

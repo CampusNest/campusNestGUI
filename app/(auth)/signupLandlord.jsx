@@ -1,10 +1,21 @@
-import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, Modal, Button } from "react-native";
+import {
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    TouchableOpacity,
+    Modal,
+    Button,
+    ActivityIndicator
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Images from "../../constants/images";
 import FormField from "../../components/FormField";
 import React, { useState, useEffect } from "react";
-import {Link, router} from "expo-router";
+import { Link, router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const SignUpLandlord = () => {
@@ -18,6 +29,7 @@ const SignUpLandlord = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [welcomeModalVisible, setWelcomeModalVisible] = useState(false);
 
     useEffect(() => {
         const { firstName, lastName, email, password } = form;
@@ -27,31 +39,46 @@ const SignUpLandlord = () => {
             setIsFormFilled(false);
         }
     }, [form]);
-
     const submit = async () => {
         try {
             setIsSubmitting(true);
-            const response = await fetch('http://172.16.0.218:9897/api/v1/landlordRegister', {
+            const response = await fetch('http://172.16.0.155:9897/api/v1/landlordRegister', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(form),
             });
-
+            const responseText = await response.json();
             if (response.ok) {
-                router.push("/home");
+                await AsyncStorage.setItem("user_id", responseText.id.toString());
+                await AsyncStorage.setItem("first_name", form.firstName);
+                await AsyncStorage.setItem("last_name", form.lastName);
+                await AsyncStorage.setItem("email", form.email);
+
+
+                setWelcomeModalVisible(true);
+
+
+                router.push("/home2");
+
             } else {
-                const responseText = await response.json();
                 setErrorMessage(responseText.error);
                 setModalVisible(true);
-            }
 
+
+            }
         } catch (error) {
             console.error('Registration error:', error);
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+
+    const handleWelcomeModalClose = () => {
+        setWelcomeModalVisible(false);
+        router.push("../(tabs2)/home2");
     };
 
     return (
@@ -71,20 +98,20 @@ const SignUpLandlord = () => {
                     />
                     <FormField
                         title="LastName"
-                        value={form.lastName}
+                        value={form.lastName.trim()}
                         handleChangeText={(e) => setForm({ ...form, lastName: e })}
                         otherStyles='mt-4'
                     />
                     <FormField
                         title="Email"
-                        value={form.email}
+                        value={form.email.trim()}
                         handleChangeText={(e) => setForm({ ...form, email: e })}
                         otherStyles='mt-4'
                         keyBoardType='email-address'
                     />
                     <FormField
                         title="Password"
-                        value={form.password}
+                        value={form.password.trim()}
                         handleChangeText={(e) => setForm({ ...form, password: e })}
                         otherStyles='mt-4'
                     />
@@ -101,11 +128,17 @@ const SignUpLandlord = () => {
                     <TouchableOpacity
                         onPress={submit}
                         className="mt-9"
+                        disabled={isSubmitting}
                     >
-                        <Text style={[styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}>
-                            SignUp
-                        </Text>
+                        {isSubmitting ? (
+                            <ActivityIndicator size="small" color="#fff" style={[styles.loadingIndicator, styles.container, isFormFilled ? styles.blueButton : styles.greyButton]} />
+                        ) : (
+                            <Text style={[styles.container, isFormFilled ? styles.blueButton : styles.greyButton]}>
+                                SignUp
+                            </Text>
+                        )}
                     </TouchableOpacity>
+
                 </View>
             </ScrollView>
 
@@ -123,6 +156,24 @@ const SignUpLandlord = () => {
                         <Button
                             title="Close"
                             onPress={() => setModalVisible(!modalVisible)}
+                        />
+                    </View>
+                </View>
+            </Modal>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={welcomeModalVisible}
+                onRequestClose={handleWelcomeModalClose}
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.welcomeText}>Welcome!</Text>
+                        <Text style={styles.modalText}>Thank you for signing up. You're now part of our community.</Text>
+                        <Button
+                            title="Get Started"
+                            onPress={handleWelcomeModalClose}
                         />
                     </View>
                 </View>
@@ -174,6 +225,13 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: "center",
         color: "red",
+    },
+    welcomeText: {
+        marginBottom: 15,
+        textAlign: "center",
+        color: "green",
+        fontSize: 20,
+        fontWeight: "bold",
     },
     absolute: {
         position: "absolute",

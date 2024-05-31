@@ -19,6 +19,7 @@ import {Link, router} from "expo-router";
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import icon from "../../constants/icons"
+import axios from "axios";
 
 
 const SignInStudent = () => {
@@ -41,28 +42,25 @@ const SignInStudent = () => {
         }
     }, [form]);
 
+    const apiBaseUrl = 'http://172.16.0.155:9897/api/v1/studentLogin';
+
+    const axiosInstance = axios.create({
+        baseURL: apiBaseUrl,
+        timeout: 5000,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
     const submit = async () => {
         try {
             setIsSubmitting(true);
-            const response = await fetch('http://172.16.0.155:9897/api/v1/studentLogin', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(form),
-            });
+            const response = await axiosInstance.post(apiBaseUrl, form);
 
-            const responseText = await response.json();
+            if (response.data) {
+                await AsyncStorage.setItem("user_id", response.data.id.toString());
 
-            if (response.ok) {
-                await AsyncStorage.setItem("user_id", responseText.id.toString());
-
-
-                // setAuth(responseText.access_token)
-                // router.push("/home2");
-
-
-                const profileResponse = await fetch(`http://172.16.0.155:9897/api/v1/studentProfile/${responseText.id}`, {
+                const profileResponse = await fetch(`http://172.16.0.155:9897/api/v1/landlordProfile/${response.data.id}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -74,33 +72,34 @@ const SignInStudent = () => {
                 if (profileResponse.ok) {
                     await AsyncStorage.setItem("first_name", profileData.firstName);
                     await AsyncStorage.setItem("last_name", profileData.lastName);
-                    await AsyncStorage.setItem("user_id",profileData.id.toString());
+                    await AsyncStorage.setItem("user_id", profileData.id.toString());
                     await AsyncStorage.setItem("email", profileData.email);
 
-                    if (profileData.role === "STUDENT"){
+                    if (profileData.role === "STUDENT") {
                         router.push("/home");
+                    } else {
+                        router.push("/home2");
                     }
-                    else {
-                        router.push("/home2")
-                    }
-
-                    console.log(profileData.role)
-
                 } else {
                     setErrorMessage(profileData.error);
                     setModalVisible(true);
                 }
-
             } else {
-                setErrorMessage(responseText.error);
+                setErrorMessage(response.data.error);
                 setModalVisible(true);
             }
-
-
-
         } catch (error) {
-            console.error('Registration error:', error);
-        } finally {
+            if (error.response) {
+                const errorMessage = error.response.data;
+                setErrorMessage(`${errorMessage}`);
+            } else if (error.request) {
+                setErrorMessage("Network Error: Please check your internet connection or server status.");
+            } else {
+                setErrorMessage(`Error: ${error.message}`);
+            }
+            setModalVisible(true);
+        }
+        finally {
             setIsSubmitting(false);
         }
     };

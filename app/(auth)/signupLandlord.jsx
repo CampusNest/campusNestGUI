@@ -16,6 +16,7 @@ import FormField from "../../components/FormField";
 import React, { useState, useEffect } from "react";
 import { Link, router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 
 const SignUpLandlord = () => {
@@ -39,46 +40,52 @@ const SignUpLandlord = () => {
             setIsFormFilled(false);
         }
     }, [form]);
+    const apiBaseUrl = 'http://172.16.0.155:9897/api/v1/landlordRegister';
+
+    const axiosInstance = axios.create({
+        baseURL: apiBaseUrl,
+        timeout: 5000,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
     const submit = async () => {
         try {
             setIsSubmitting(true);
-            const response = await fetch('http://172.16.0.155:9897/api/v1/landlordRegister', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(form),
-            });
-            const responseText = await response.json();
-            if (response.ok) {
-                await AsyncStorage.setItem("user_id", responseText.id.toString());
-                await AsyncStorage.setItem("first_name", form.firstName);
-                await AsyncStorage.setItem("last_name", form.lastName);
-                await AsyncStorage.setItem("email", form.email);
+            const response = await axiosInstance.post(apiBaseUrl, form);
 
+            if (response.data) {
+                await AsyncStorage.setItem("user_id", response.data.id.toString());
+                    await AsyncStorage.setItem("first_name", form.firstName);
+                    await AsyncStorage.setItem("last_name", form.lastName);
+                    await AsyncStorage.setItem("email", form.email);
 
                 setWelcomeModalVisible(true);
 
-
-                router.push("/home2");
-
             } else {
-                setErrorMessage(responseText.error);
+                setErrorMessage(response.data.error);
                 setModalVisible(true);
-
-
             }
         } catch (error) {
-            console.error('Registration error:', error);
-        } finally {
+            if (error.response) {
+                const errorMessage = error.response.data;
+                setErrorMessage(`${errorMessage}`);
+            } else if (error.request) {
+                setErrorMessage("Network Error: Please check your internet connection or server status.");
+            } else {
+                setErrorMessage(`Error: ${error.message}`);
+            }
+            setModalVisible(true);
+        }
+        finally {
             setIsSubmitting(false);
         }
     };
 
-
     const handleWelcomeModalClose = () => {
         setWelcomeModalVisible(false);
-        router.push("../(tabs2)/home2");
+        router.push("/home2");
     };
 
     return (

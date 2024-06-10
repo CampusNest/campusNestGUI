@@ -40,7 +40,7 @@ const ForgotLandlordPassword = () => {
     const submit = async () => {
         try {
             setIsSubmitting(true);
-            const response = await fetch('http://172.16.0.56:8080/api/v1/landlordPassword', {
+            const response = await fetch('http://172.16.0.155:9897/api/v1/landlordPassword', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

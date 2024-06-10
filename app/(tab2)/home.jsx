@@ -9,6 +9,7 @@ import hos from '../../assets/images/sketch.png';
 import { Header } from '../../components/Header';
 import navigation from "../../components/Navigation";
 import axios from "axios";
+import Receipt from "../(receipt)/receipt";
 
 const Home = () => {
     const [apartmentData, setApartmentData] = useState([]);
@@ -21,7 +22,7 @@ const Home = () => {
         const fetchApartments = async () => {
             try {
                 const userId = await AsyncStorage.getItem('user_id');
-                console.log('User ID:', userId);
+
 
                 if (!userId) {
                     console.error('No user ID found in AsyncStorage');
@@ -29,14 +30,14 @@ const Home = () => {
                     return;
                 }
 
-                const response = await fetch('http://172.16.0.56:8080/api/v1/apartment/allApartment', {
+                const response = await fetch('http:/172.16.0.155:9897/api/v1/apartment/allApartment', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                 });
 
-                console.log('Response Status:', response.status);
+
 
                 if (response.ok) {
                     const data = await response.json();
@@ -61,7 +62,7 @@ const Home = () => {
     };
 
     const handleRentButtonPress = async (selected) => {
-        let url = "http://172.16.0.56:8080/api/v1/payment/payForRent";
+        let url = "http://172.16.0.155:9897/api/v1/payment/payForRent";
         const user = await AsyncStorage.getItem('user_id');
         const axiosInstance = axios.create({
             baseURL: url,
@@ -76,12 +77,81 @@ const Home = () => {
                 };
                 const response = await axiosInstance.post(url,payload)
                  if (response.data){
-                     await Linking.openURL(response.data.data)
-                 }
+                    let value = response.data.data
+                     let ref = response.data.ref
+                     await Linking.openURL(value);
+
+                    await waitForPaymentToComplete(ref);
+
+                    let res = await pollVerifyPayment(ref)
+                     if (res === "success"){
+                       let id = await landlordId(selected)
+                         await deleteApartment(id,selected)
+
+                         const receiptData = {
+                             housepix: hos,
+                             payDate: '2023-01-01',
+                             duration: '12 months',
+                             amount: '1000',
+                             commission: '100',
+                             total: '1100',
+                             name: 'John Doe',
+                             number: '1234567890'
+                         };
+
+                         navigation.navigate('Receipt', { receiptData });
+                     }
+
+                     }
+
+    }
+    const waitForPaymentToComplete = async (ref) => {
+
+        await new Promise(resolve => setTimeout(resolve, 10000))
+    }
+    const pollVerifyPayment = async (ref) => {
+            try {
+                let urlRef = `http://172.16.0.155:9897/api/v1/payment/verifyPayment/${ref}`;
+                const axiosInstance = axios.create({baseURL: urlRef, headers: {'Content-Type': 'application/json'}})
+                const refResponse = await axiosInstance.get(urlRef)
+                return refResponse.data;
+
+            } catch (error) {
+                console.error(error)
+            }
+    }
+
+    const landlordId = async (id) =>{
+        try {
+            let url = `http://172.16.0.155:9897/api/v1/apartment/getLandLord/${id}`;
+             const axiosInstance = axios.create({baseURL: url, headers: {'Content-Type': 'application/json'}})
+            const response = await axiosInstance.get(url)
+            return response.data;
+        }catch (error){
+            console.error(error)
+        }
+    }
 
 
+    const deleteApartment = async (landlordID, apartmentID) => {
+        const payload = {
+            apartmentId: Number(apartmentID),
+            landLordId: Number(landlordID)
+        };
+        console.log(payload);
 
+        try {
+            const urld = `http://172.16.0.155:9897/api/v1/deleteApartment`;
+            const axiosInstance = axios.create({ baseURL: urld, headers: { 'Content-Type': 'application/json' } });
+            const response = await axiosInstance.delete(urld, { data: payload });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
+    const generateReceipt = async ({housepix,payDate, duration, amount, commission,total,name,number}) =>{
+        return <Receipt housepix={housepix} payDate={payDate} duration={duration} amount={amount} commission={commission} total={total}  name={name} number={number}/>
     }
 
         return (
@@ -100,7 +170,7 @@ const Home = () => {
                                 </View>
                                 <View style={styles.textRow}>
                                     <Icon name="cash-outline" size={20} color="#4F8EF7"/>
-                                    <Text style={styles.text}>Annual Rent Fee: {apartment.annualRentFee}</Text>
+                                    <Text style={styles.text}>Annual Rent Fee: {Number(apartment.annualRentFee) + 7000}</Text>
                                 </View>
                                 <View style={styles.textRow}>
                                     <Icon name="document-text-outline" size={20} color="#4F8EF7"/>

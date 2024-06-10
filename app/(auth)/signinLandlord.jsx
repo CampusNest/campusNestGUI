@@ -30,7 +30,7 @@ const SignInLandLord = () => {
         setIsFormFilled(!!email && !!password);
     }, [form]);
 
-    const apiBaseUrl = 'http://172.16.0.56:8080/api/v1/landlordLogin';
+    const apiBaseUrl = 'http://172.16.0.155:9897/api/v1/landlordLogin';
 
     const axiosInstance = axios.create({
         baseURL: apiBaseUrl,
@@ -48,7 +48,7 @@ const SignInLandLord = () => {
             if (response.data) {
                 await AsyncStorage.setItem("user_id", response.data.id.toString());
 
-                const profileResponse = await fetch(`http://172.16.0.56:8080:9897/api/v1/landlordProfile/${response.data.id}`, {
+                const profileResponse = await fetch(`http://172.16.0.155:9897/api/v1/landlordProfile/${response.data.id}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

@@ -24,7 +24,7 @@ const Home2 = () =>{
                     return;
                 }
 
-                const response = await fetch(`http://172.16.0.56:8080/api/v1/apartment/postedApartment/${userId}`, {
+                const response = await fetch(`http://172.16.0.155:9897/api/v1/apartment/postedApartment/${userId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

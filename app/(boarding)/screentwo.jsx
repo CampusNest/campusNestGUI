@@ -29,6 +29,7 @@ export default function ScreenTwo() {
                         onGestureEvent={handleGestureEvent}
                         activeOffsetX={[-80, 80]}
                     >
+
                         <View className="w-full justify-center items-center h-full px-4">
                             <Link
                                 href={'../(auth)/signup'}

@@ -1,4 +1,4 @@
-import {ScrollView, StyleSheet, Text, View,Image} from "react-native";
+import {ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, Modal, Alert} from "react-native";
 import {StatusBar} from "react-native-web";
 import {SafeAreaView, useSafeAreaInsets} from "react-native-safe-area-context";
 import tailwind from 'tailwindcss-react-native';
@@ -6,11 +6,13 @@ import {Header} from "../../components/Header";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useEffect, useState} from "react";
 import hos from "../../assets/images/sketch.png";
-
+import axios from "axios";
 
 const Home2 = () =>{
     const [apartmentData, setApartmentData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [apartmentToDelete, setApartmentToDelete] = useState(null);
 
     useEffect(() => {
         const showHouse = async () => {
@@ -24,7 +26,7 @@ const Home2 = () =>{
                     return;
                 }
 
-                const response = await fetch(`http://172.16.0.155:9897/api/v1/apartment/postedApartment/${userId}`, {
+                const response = await fetch(`http://192.168.43.125:9897/api/v1/apartment/apartments/${userId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -37,6 +39,7 @@ const Home2 = () =>{
                     const data = await response.json();
                     console.log("Response Data:", data);
                     setApartmentData(data);
+
                 } else {
                     console.error("Failed to fetch apartment data:", response.statusText);
                 }
@@ -50,6 +53,38 @@ const Home2 = () =>{
         showHouse();
     }, []);
 
+    const handleDelete = async (apartmentId) => {
+        const apiBaseUrl = `http://192.168.43.125:9897/api/v1/deleteApartment/${apartmentId}`;
+        const axiosInstance  = axios.create({
+            baseURL: apiBaseUrl,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+
+        try {
+            const response = await axiosInstance.delete(apiBaseUrl);
+
+
+            setApartmentData(prevApartmentData =>
+                prevApartmentData.filter(apartment => apartment.id !== apartmentId)
+            );
+
+        } catch (error) {
+            console.error("Error deleting apartment:", error);
+
+        } finally {
+            setModalVisible(false);
+            setApartmentToDelete(null);
+        }
+    };
+
+
+    const showDeleteConfirmation = (apartmentId) => {
+        setApartmentToDelete(apartmentId);
+        setModalVisible(true);
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <Header />
@@ -59,14 +94,22 @@ const Home2 = () =>{
                 ) : apartmentData.length > 0 ? (
                     apartmentData.map(apartment => (
                         <View key={apartment.id} style={styles.apartmentContainer}>
-                            {apartment.apartmentImage.map(image => (
-                                <Image key={image.id} source={{ uri: image.imageUrl }} style={styles.image} />
-                            ))}
+                            <Image source={{ uri: apartment.image}} style={styles.image} />
                             <Text>Description: {apartment.description}</Text>
                             <Text>Type: {apartment.apartmentType}</Text>
                             <Text>Annual Rent Fee: {apartment.annualRentFee}</Text>
                             <Text>Agreement and Commission: {apartment.agreementAndCommission}</Text>
                             <Text>Location: {apartment.location}</Text>
+
+                            <View style={styles.edel}>
+                                <TouchableOpacity>
+                                    <Text style={styles.edt}>Edit</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity onPress={() => showDeleteConfirmation(apartment.id)}>
+                                    <Text style={styles.delt}>Delete</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     ))
                 ) : (
@@ -75,6 +118,37 @@ const Home2 = () =>{
                         <Text>No House Posted </Text>
                     </>
                 )}
+
+
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                        setModalVisible(false);
+                        setApartmentToDelete(null);
+                    }}
+                >
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalView}>
+                            <Text style={styles.modalText}>Are you sure you want to delete this post?</Text>
+                            <View style={styles.modalButtons}>
+                                <TouchableOpacity
+                                    style={[styles.button, styles.buttonClose]}
+                                    onPress={() => setModalVisible(false)}
+                                >
+                                    <Text style={styles.textStyle}>No</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.button, styles.buttonDelete]}
+                                    onPress={() => handleDelete(apartmentToDelete)}
+                                >
+                                    <Text style={styles.textStyle}>Yes</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
             </ScrollView>
         </SafeAreaView>
     );
@@ -103,7 +177,44 @@ const styles = StyleSheet.create({
         height: 200,
         marginBottom: 10,
     },
-});
+    edel : {
+        flex :1 ,
+        justifyContent: "center",
+        flexDirection : "row",
+        gap : 20,
+        marginTop: 10
+    },
+    edt : {
+        backgroundColor: "green",
+        width : 70,
+        height: 30,
+        textAlign: "center",
+        color : "#fff",
+        paddingTop : 4,
+        fontWeight : "bold"
+    },
+    delt : {
+        backgroundColor: "red",
+        width : 70,
+        height: 30,
+        textAlign: "center",
+        color : "#fff",
+        paddingTop : 4,
+        fontWeight : "bold"
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",}
+    });
 
 
 

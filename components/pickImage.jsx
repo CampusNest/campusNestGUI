@@ -117,18 +117,16 @@
 // });
 //
 
-
 import { useState, useEffect } from 'react';
 import { Button, Image, View, StyleSheet, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import * as Permissions from 'expo-permissions';
 
 export default function ImagePickerExample({ onImageSelected }) {
     const [image, setImage] = useState(null);
 
     useEffect(() => {
         (async () => {
-            const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
             if (status !== 'granted') {
                 Alert.alert('Sorry, we need camera roll permissions to make this work!');
             }
@@ -151,8 +149,8 @@ export default function ImagePickerExample({ onImageSelected }) {
             setImage(imgUri);
 
             onImageSelected({
-                uri: imgUri,
-                type: asset.type || 'image/jpeg',
+                // uri: imgUri,
+                // type: asset.type || 'image/jpeg',
                 fileName: asset.fileName || imgUri.split('/').pop(),
             });
         }
@@ -165,6 +163,7 @@ export default function ImagePickerExample({ onImageSelected }) {
         </View>
     );
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -175,5 +174,6 @@ const styles = StyleSheet.create({
     image: {
         width: 200,
         height: 200,
+        marginTop: 30
     },
 });

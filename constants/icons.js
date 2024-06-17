@@ -9,6 +9,7 @@ import enterSearch from "../assets/icons/enter.png"
 import searchIcon from "../assets/icons/searchIcon.svg"
 import house from "../assets/images/sketch.png"
 import exit from "../assets/images/icons8-exit-50.png"
+import uploadPix from "../assets/icons/upload.png"
 export default {
     showEye,
     hideEye,
@@ -20,6 +21,7 @@ export default {
     enterSearch,
     searchIcon,
     house,
-    exit
+    exit,
+    uploadPix
 
 }

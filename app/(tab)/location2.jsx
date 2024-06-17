@@ -18,6 +18,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from '@react-native-picker/picker';
 import icons from "../../constants/icons";
 import * as DocumentPicker from "expo-document-picker"
+import axios from "axios";
+import CompleteRegistration from "../../components/completeRegistration";
 
 const Location2 = () => {
     const [lId, setLId] = useState(null);
@@ -40,6 +42,7 @@ const Location2 = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     const [isFormFilled, setIsFormFilled] = useState(false);
+    const [showCompleteProfile, setCompleteProfile] = useState(false);
 
 
     const openPicker = async () =>{
@@ -63,12 +66,14 @@ const Location2 = () => {
 
 
 
+
     const submit = async () => {
 
 
         setIsSubmitting(true);
 
         const apiBaseUrl = 'http://192.168.43.125:9897/api/v1/postApartment';
+        const userUrl = `http://192.168.43.125:9897/api/v1/landlordProfile/${lId}`;
 
         try {
 
@@ -77,7 +82,8 @@ const Location2 = () => {
             function sanitizeImageName(name) {
                 return name.replace(/\s*\(\d*\)\s*/g, '').replaceAll(" ", "_");
             }
-              var imageName;
+
+            var imageName;
              if (image.name !== undefined){
             imageName = sanitizeImageName(image.name || 'untitled') + '.' + (image.name.split('.').pop() || 'jpg');}
 
@@ -96,34 +102,40 @@ const Location2 = () => {
             formData.append("agreementAndCommission", agreementAndCommission);
 
 
+            const instance = axios.create({
+                baseURL : userUrl,
+                headers:{
+                    'Content-Type': 'application/json',
+                }
+            })
 
+            const userDetails = instance.get(userUrl);
 
+            const responseData = (await userDetails).data
 
-            console.log('FormData:', formData);
-            console.log(image);
-
-            const response = await fetch(apiBaseUrl, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-
-
-
-            if (response.ok){
-                setModalVisible(true)
+            if (responseData.imageUrl === null && responseData.location === null && responseData.phoneNumber === null && responseData.stateOfOrigin === null){
+                setCompleteProfile(true)
+                Alert.alert("","complete profile")
             }
 
-            else{
-                const responseJson = await response.text();
-                setErrorMessage(responseJson)
-                setModalVisible(true)
+            else {
+                const response = await fetch(apiBaseUrl, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+
+
+                if (response.ok) {
+                    setModalVisible(true)
+                } else {
+                    const responseJson = await response.text();
+                    setErrorMessage(responseJson)
+                    setModalVisible(true)
+                }
             }
-
-
-
         } catch (error) {
             console.log('Error:', error);
             if (error.response) {
@@ -133,13 +145,13 @@ const Location2 = () => {
             }
         } finally {
             setIsSubmitting(false);
+            setCompleteProfile(false);
            setDescription('')
             setLocation('')
             setApartmentType(null)
             setAnnualRentFee('')
             setAgreementAndCommission('')
             setImage('')
-
         }
     };
 
@@ -154,12 +166,26 @@ const Location2 = () => {
                         onChangeText={(e) => setDescription(e)}
                         otherStyles='mt-7'
                     />
-                    <FormField
-                        title="Location"
-                        value={location}
-                        onChangeText={(e) => setLocation(e)}
-                        otherStyles='mt-4'
-                    />
+
+                    <View style={styles.pickerContainer}>
+                        <Picker
+                            selectedValue={location}
+                            onValueChange={(itemValue) => setLocation(itemValue)}
+                            style={styles.picker}
+                        >
+                            <Picker.Item label="Select Location" value="" />
+                            <Picker.Item label="Onike" value="Onike" />
+                            <Picker.Item label="Iwaya" value="Iwaya" />
+                            <Picker.Item label="Pako" value="Pako" />
+                            <Picker.Item label="Bariga" value="Bariga" />
+                            <Picker.Item label="Onipanu" value="Onipanu" />
+                            <Picker.Item label="Jibowu" value="Jibowu" />
+                            <Picker.Item label="Sabo" value="Sabo" />
+                            <Picker.Item label="Ojuelegba" value="Ojuelegba" />
+                            <Picker.Item label="Yaba" value="Yaba" />
+                            <Picker.Item label="Ladi-lak" value="Ladi-lak" />
+                        </Picker>
+                    </View>
                     <View style={styles.pickerContainer}>
                         <Picker
                             selectedValue={apartmentType}
@@ -225,6 +251,23 @@ const Location2 = () => {
                     </View>
                 </View>
             </Modal>
+
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={showCompleteProfile}
+                onRequestClose={() => setCompleteProfile(!showCompleteProfile)}
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <CompleteRegistration />
+                        <Button title="Close" onPress={() => setCompleteProfile(false)} />
+                    </View>
+                </View>
+            </Modal>
+
+
         </SafeAreaView>
     );
 };

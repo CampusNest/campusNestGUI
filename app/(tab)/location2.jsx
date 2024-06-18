@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {Image} from "react-native";
+import { Image } from "react-native";
 import {
     ActivityIndicator,
     Alert,
@@ -17,21 +17,12 @@ import ImagePickerExample from "../../components/pickImage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from '@react-native-picker/picker';
 import icons from "../../constants/icons";
-import * as DocumentPicker from "expo-document-picker"
+import * as DocumentPicker from "expo-document-picker";
 import axios from "axios";
 import CompleteRegistration from "../../components/completeRegistration";
 
 const Location2 = () => {
     const [lId, setLId] = useState(null);
-
-    useEffect(() => {
-        const fetchUserId = async () => {
-            const id = await AsyncStorage.getItem("user_id");
-            setLId(id);
-        };
-        fetchUserId();
-    }, []);
-
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [description, setDescription] = useState('');
     const [location, setLocation] = useState('');
@@ -41,42 +32,58 @@ const Location2 = () => {
     const [image, setImage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
-    const [isFormFilled, setIsFormFilled] = useState(false);
-    const [showCompleteProfile, setCompleteProfile] = useState(false);
+    const [showCompleteProfile, setShowCompleteProfile] = useState(false);
+    const [isProfileComplete, setIsProfileComplete] = useState(false);
 
+    useEffect(() => {
+        const fetchUserIdAndProfile = async () => {
+            const id = await AsyncStorage.getItem("user_id");
+            setLId(id);
+            if (id) {
+                const userUrl = `http://192.168.43.125:9897/api/v1/landlordProfile/${id}`;
+                const instance = axios.create({
+                    baseURL: userUrl,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const userDetails = await instance.get(userUrl);
+                const responseData = userDetails.data;
+                const profileComplete = responseData.imageUrl && responseData.location && responseData.phoneNumber && responseData.stateOfOrigin && responseData.bankName && responseData.accountNumber;
+                setIsProfileComplete(profileComplete);
+                setShowCompleteProfile(!profileComplete);
+            }
+        };
+        fetchUserIdAndProfile();
+    }, []);
 
-    const openPicker = async () =>{
+    const openPicker = async () => {
         const result = await DocumentPicker.getDocumentAsync({
             type: ['image/png', 'image/jpg', 'image/jpeg'],
-            copyToCacheDirectory : true,
+            copyToCacheDirectory: true,
+        });
 
-        })
-
-        if (!result.canceled){
-            setImage(result.assets[0])
-
+        if (!result.canceled) {
+            setImage(result.assets[0]);
         } else {
-            setTimeout(()=>{
-                Alert.alert("","cancelled")
-            },200)
+            setTimeout(() => {
+                Alert.alert("", "cancelled");
+            }, 200);
         }
 
-        console.log('image is ',image)
-    }
-
-
-
+        console.log('image is ', image);
+    };
 
     const submit = async () => {
-
+        if (!isProfileComplete) {
+            setShowCompleteProfile(true);
+            return;
+        }
 
         setIsSubmitting(true);
 
         const apiBaseUrl = 'http://192.168.43.125:9897/api/v1/postApartment';
-        const userUrl = `http://192.168.43.125:9897/api/v1/landlordProfile/${lId}`;
-
         try {
-
             const formData = new FormData();
 
             function sanitizeImageName(name) {
@@ -84,16 +91,16 @@ const Location2 = () => {
             }
 
             var imageName;
-             if (image.name !== undefined){
-            imageName = sanitizeImageName(image.name || 'untitled') + '.' + (image.name.split('.').pop() || 'jpg');}
-
+            if (image.name !== undefined) {
+                imageName = sanitizeImageName(image.name || 'untitled') + '.' + (image.name.split('.').pop() || 'jpg');
+            }
 
             formData.append("image", {
                 uri: image.uri,
                 type: image.mimeType || 'image/jpeg',
                 name: imageName
             });
-            console.log(imageName)
+            console.log(imageName);
             formData.append("landLordId", lId);
             formData.append("description", description);
             formData.append("location", location);
@@ -101,40 +108,20 @@ const Location2 = () => {
             formData.append("annualRentFee", annualRentFee);
             formData.append("agreementAndCommission", agreementAndCommission);
 
+            const response = await fetch(apiBaseUrl, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
 
-            const instance = axios.create({
-                baseURL : userUrl,
-                headers:{
-                    'Content-Type': 'application/json',
-                }
-            })
-
-            const userDetails = instance.get(userUrl);
-
-            const responseData = (await userDetails).data
-
-            if (responseData.imageUrl === null && responseData.location === null && responseData.phoneNumber === null && responseData.stateOfOrigin === null){
-                setCompleteProfile(true)
-                Alert.alert("","complete profile")
-            }
-
-            else {
-                const response = await fetch(apiBaseUrl, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-
-
-                if (response.ok) {
-                    setModalVisible(true)
-                } else {
-                    const responseJson = await response.text();
-                    setErrorMessage(responseJson)
-                    setModalVisible(true)
-                }
+            if (response.ok) {
+                setModalVisible(true);
+            } else {
+                const responseJson = await response.text();
+                setErrorMessage(responseJson);
+                setModalVisible(true);
             }
         } catch (error) {
             console.log('Error:', error);
@@ -145,16 +132,14 @@ const Location2 = () => {
             }
         } finally {
             setIsSubmitting(false);
-            setCompleteProfile(false);
-           setDescription('')
-            setLocation('')
-            setApartmentType(null)
-            setAnnualRentFee('')
-            setAgreementAndCommission('')
-            setImage('')
+            setDescription('');
+            setLocation('');
+            setApartmentType(null);
+            setAnnualRentFee('');
+            setAgreementAndCommission('');
+            setImage('');
         }
     };
-
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -213,17 +198,16 @@ const Location2 = () => {
                         onChangeText={(e) => setAgreementAndCommission(e)}
                         otherStyles='mt-4'
                     />
-                 <TouchableOpacity onPress={()=>openPicker()}>
-                       <View className={'w-52 h-40 px-4  rounded-2xl justify-center items-center mt-8 border border-dashed'}>
-                             <View className={"w-14 h-14 border border-dashed justify-center items-center"}>
-                                 <Image source={icons.uploadPix} resizeMode={"contain"} className={"h-1/2 w-1/2"}/>
-                             </View>
-                         </View>
-
-                         <View className={"mt-10"}>
-                             {image && <Image source={{uri : image.uri}} resizeMode={"cover"} className={"w-full h-40 rounded-2xl"}/>}
-                     </View>
-                     </TouchableOpacity>
+                    <TouchableOpacity onPress={() => openPicker()}>
+                        <View className={'w-52 h-40 px-4  rounded-2xl justify-center items-center mt-8 border border-dashed'}>
+                            <View className={"w-14 h-14 border border-dashed justify-center items-center"}>
+                                <Image source={icons.uploadPix} resizeMode={"contain"} className={"h-1/2 w-1/2"} />
+                            </View>
+                        </View>
+                        <View className={"mt-10"}>
+                            {image && <Image source={{ uri: image.uri }} resizeMode={"cover"} className={"w-full h-40 rounded-2xl"} />}
+                        </View>
+                    </TouchableOpacity>
                     <TouchableOpacity
                         onPress={submit}
                         style={[styles.button, isSubmitting ? styles.disabledButton : null]}
@@ -246,28 +230,34 @@ const Location2 = () => {
             >
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
-                        <Text style={errorMessage ? styles.modalText : {color : "green", marginBottom: 20}}>{errorMessage ? errorMessage : 'Posted Successfully'}</Text>
+                        <Text style={errorMessage ? styles.modalText : { color: "green", marginBottom: 20 }}>{errorMessage ? errorMessage : 'Posted Successfully'}</Text>
                         <Button title="Close" onPress={() => setModalVisible(!modalVisible)} />
                     </View>
                 </View>
             </Modal>
 
+            {showCompleteProfile && (
+                <View style={styles.backgroundOverlay} />
+            )}
 
             <Modal
                 animationType="slide"
                 transparent={true}
                 visible={showCompleteProfile}
-                onRequestClose={() => setCompleteProfile(!showCompleteProfile)}
+                onRequestClose={() => { /* do nothing */ }}
             >
                 <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
+                    <View style={styles.modalView2}>
+                        <TouchableOpacity onPress={() => setShowCompleteProfile(!showCompleteProfile)}>
+                            <Image source={icons.cancel} style={{width:25,height:25}} className="ml-72 mb-4"/>
+                        </TouchableOpacity>
+                        <Text style={styles.txt}>Complete Registration</Text>
+
                         <CompleteRegistration />
-                        <Button title="Close" onPress={() => setCompleteProfile(false)} />
+
                     </View>
                 </View>
             </Modal>
-
-
         </SafeAreaView>
     );
 };
@@ -309,7 +299,6 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         borderRadius: 8,
     },
-
     centeredView: {
         flex: 1,
         justifyContent: "center",
@@ -335,7 +324,34 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: "center",
         color: "red",
-    }
+    },
+    modalView2: {
+        margin: 20,
+        width: 390,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 4.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    backgroundOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex: 1
+    }, txt : {
+        fontSize : 22,
+        fontWeight: "bold"
+    },
 });
 
 export default Location2;

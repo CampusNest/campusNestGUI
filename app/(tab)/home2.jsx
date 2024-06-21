@@ -64,7 +64,9 @@ const Home2 = () =>{
 
         try {
             const response = await axiosInstance.delete(apiBaseUrl);
-
+                if (response.data){
+                    Alert.alert("  ", "Post deleted")
+                }
 
             setApartmentData(prevApartmentData =>
                 prevApartmentData.filter(apartment => apartment.id !== apartmentId)
@@ -213,7 +215,13 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         borderRadius: 20,
         padding: 35,
-        alignItems: "center",}
+        alignItems: "center"},
+
+    modalButtons : {
+        flexDirection : 'row',
+        gap : 120,
+        marginTop: 10
+    }
     });
 
 

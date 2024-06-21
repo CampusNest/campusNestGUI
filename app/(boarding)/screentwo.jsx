@@ -45,7 +45,7 @@ export default function ScreenTwo() {
                                     Find <Text style={{ color: "#006FFF" }}>Your Perfect Home</Text> with Us Today
                                 </Text>
                                 <Text className="font-light text-center mt-4" style={{ color: "#B9B3B3" }}>
-                                    Lorem ipsum is simply dummy text of the printing and typesetting industry
+                                    Explore a wide range of properties that fit your needs and budget
                                 </Text>
                             </View>
                             <View className="flex-row justify-between mt-12 px-4 ">

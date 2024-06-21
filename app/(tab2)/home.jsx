@@ -1,28 +1,44 @@
 
-
 import React, { useEffect, useState } from 'react';
-import {ScrollView, StyleSheet, Text, View, Image, Modal, TouchableOpacity, Linking} from 'react-native';
+import {ScrollView, StyleSheet, Text, View, Image, Modal, TouchableOpacity, Linking, Alert} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import hos from '../../assets/images/sketch.png';
 import { Header } from '../../components/Header';
-import navigation from "../../components/Navigation";
+// import navigation from "../../components/Navigation";
 import axios from "axios";
 import Receipt from "../(receipt)/receipt";
+import {useNavigation} from "@react-navigation/native";
+import * as Print from "expo-print";
+import * as FileSystem from "expo-file-system";
+import {shareAsync} from "expo-sharing";
+import i from "../../assets/images/Campus nest logo.png"
+import {router} from "expo-router";
+import icons from "../../constants/icons";
+import CompleteRegistration from "../../components/completeRegistration";
+import StudentCompleteRegistration from "../../components/StudentCompleteRegistration";
 
 const Home = () => {
     const [apartmentData, setApartmentData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedApartment, setSelectedApartment] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
-
+    const navigation = useNavigation();
+    const [userName, setUserName] = useState('');
+    const [showCompleteProfile, setShowCompleteProfile] = useState(false);
+    const [isProfileComplete, setIsProfileComplete] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [number, setNumber] = useState('')
 
     useEffect(() => {
-        const fetchApartments = async () => {
+        const fetchUserData = async () => {
             try {
                 const userId = await AsyncStorage.getItem('user_id');
+                const firstName = await AsyncStorage.getItem("first_name");
+                const lastName = await AsyncStorage.getItem("last_name");
 
+                setUserName(`${firstName} ${lastName}`);
 
                 if (!userId) {
                     console.error('No user ID found in AsyncStorage');
@@ -30,14 +46,22 @@ const Home = () => {
                     return;
                 }
 
-                const response = await fetch('http:/172.16.0.155:9897/api/v1/apartment/allApartment', {
+                await fetchApartmentData();
+                await fetchUserProfile(userId);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                setLoading(false);
+            }
+        };
+
+        const fetchApartmentData = async () => {
+            try {
+                const response = await fetch('http://192.168.43.125:9897/api/v1/apartment/allApartment', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                 });
-
-
 
                 if (response.ok) {
                     const data = await response.json();
@@ -53,7 +77,29 @@ const Home = () => {
             }
         };
 
-        fetchApartments();
+        const fetchUserProfile = async (userId) => {
+            try {
+                const userUrl = `http://192.168.43.125:9897/api/v1/studentProfile/${userId}`;
+                const instance = axios.create({
+                    baseURL: userUrl,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const response = await instance.get(userUrl);
+                const responseData = response.data;
+                const profileComplete = responseData.imageUrl && responseData.phoneNumber && responseData.stateOfOrigin;
+
+                setIsProfileComplete(profileComplete);
+                setShowCompleteProfile(!profileComplete);
+                setNumber(responseData.phoneNumber)
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+            }
+        };
+
+        fetchUserData();
     }, []);
 
     const handleViewButtonPress = (apartment) => {
@@ -62,7 +108,14 @@ const Home = () => {
     };
 
     const handleRentButtonPress = async (selected) => {
-        let url = "http://172.16.0.155:9897/api/v1/payment/payForRent";
+        if (!isProfileComplete) {
+            setShowCompleteProfile(true);
+            return;
+        }
+        setIsSubmitting()
+
+        try {
+        let url = "http://192.168.43.125:9897/api/v1/payment/payForRent";
         const user = await AsyncStorage.getItem('user_id');
         const axiosInstance = axios.create({
             baseURL: url,
@@ -85,24 +138,31 @@ const Home = () => {
 
                     let res = await pollVerifyPayment(ref)
                      if (res === "success"){
-                       let id = await landlordId(selected)
-                         await deleteApartment(id,selected)
+                       let landlord = await landlordId(selected)
+                         console.log(landlord)
 
-                         const receiptData = {
-                             housepix: hos,
-                             payDate: '2023-01-01',
-                             duration: '12 months',
-                             amount: '1000',
-                             commission: '100',
-                             total: '1100',
-                             name: 'John Doe',
-                             number: '1234567890'
-                         };
+                         let userApartment = await findApartment(selected)
 
-                         navigation.navigate('Receipt', { receiptData });
+
+                         await generateReceipt({
+                    housepix: userApartment.image,
+                    payDate: new Date().toLocaleDateString(),
+                    duration: '1 year',
+                    amount: Number(userApartment.annualRentFee) + 7000,
+                    commission: userApartment.agreementAndCommission,
+                    total: Number(userApartment.annualRentFee) + 7000 + Number(userApartment.agreementAndCommission),
+                    name: userName,
+                    number: number
+                });
                      }
 
-                     }
+                     await deleteApartment(selected)
+
+                     }}catch (error){
+                      console.log(error)
+                }finally {
+                  setModalVisible(false)
+        }
 
     }
     const waitForPaymentToComplete = async (ref) => {
@@ -111,7 +171,7 @@ const Home = () => {
     }
     const pollVerifyPayment = async (ref) => {
             try {
-                let urlRef = `http://172.16.0.155:9897/api/v1/payment/verifyPayment/${ref}`;
+                let urlRef = `http://192.168.43.125:9897/api/v1/payment/verifyPayment/${ref}`;
                 const axiosInstance = axios.create({baseURL: urlRef, headers: {'Content-Type': 'application/json'}})
                 const refResponse = await axiosInstance.get(urlRef)
                 return refResponse.data;
@@ -123,8 +183,22 @@ const Home = () => {
 
     const landlordId = async (id) =>{
         try {
-            let url = `http://172.16.0.155:9897/api/v1/apartment/getLandLord/${id}`;
+            let url = `http://192.168.43.125:9897/api/v1/apartment/getLandLord/${id}`;
              const axiosInstance = axios.create({baseURL: url, headers: {'Content-Type': 'application/json'}})
+            const response = await axiosInstance.get(url)
+            console.log(response.data)
+            return response.data;
+        }catch (error){
+            console.error(error)
+        }
+    }
+
+
+
+    const findApartment = async (id) => {
+        try {
+            let url = `http://192.168.43.125:9897/api/v1/apartment/apartment/${id}`;
+            const axiosInstance = axios.create({baseURL: url, headers: {'Content-Type': 'application/json'}})
             const response = await axiosInstance.get(url)
             return response.data;
         }catch (error){
@@ -133,27 +207,94 @@ const Home = () => {
     }
 
 
-    const deleteApartment = async (landlordID, apartmentID) => {
-        const payload = {
-            apartmentId: Number(apartmentID),
-            landLordId: Number(landlordID)
-        };
-        console.log(payload);
+    const deleteApartment = async (apartmentId) => {
+        const apiBaseUrl = `http://192.168.43.125:9897/api/v1/deleteApartment/${apartmentId}`;
+        const axiosInstance  = axios.create({
+            baseURL: apiBaseUrl,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
 
         try {
-            const urld = `http://172.16.0.155:9897/api/v1/deleteApartment`;
-            const axiosInstance = axios.create({ baseURL: urld, headers: { 'Content-Type': 'application/json' } });
-            const response = await axiosInstance.delete(urld, { data: payload });
-            return response.data;
+            const response = await axiosInstance.delete(apiBaseUrl);
+
+            console.log(response)
+            setApartmentData(prevApartmentData =>
+                prevApartmentData.filter(apartment => apartment.id !== apartmentId)
+            );
+
         } catch (error) {
-            console.error(error);
+            console.error("Error deleting apartment:", error);
+
         }
     }
 
-    const generateReceipt = async ({housepix,payDate, duration, amount, commission,total,name,number}) =>{
-        return <Receipt housepix={housepix} payDate={payDate} duration={duration} amount={amount} commission={commission} total={total}  name={name} number={number}/>
-    }
+    // const generateReceipt = async ({housepix,payDate, duration, amount, commission,total,name,number}) =>{
+    //     return <Receipt housepix={housepix} payDate={payDate} duration={duration} amount={amount} commission={commission} total={total}  name={name} number={number}/>
+    // }
 
+    const generateReceipt = async ({ housepix, payDate, duration, amount, commission, total, name, number }) => {
+        const htmlContent = `
+<html lang="">
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 100%; padding: 20px; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .content { margin-bottom: 20px; font-size: 35px}
+        .footer { text-align: center; margin-top: 20px; }
+        .imag {width: 250px; height: 250px}
+    </style>
+    <title>Receipt</title>
+  
+</head>
+<body>
+    <div class="container">
+        <img src="../../assets/images/Campus%20nest%20logo.png" alt="logo" style="width: 40px; height: 40px">
+        <div class="header">
+            <h1>Receipt</h1>
+        </div>
+        <img src="${housepix}" alt="house" class="imag">
+        <div class="content">
+            <p><strong>Payment Date:</strong> ${payDate}</p>
+            <p><strong>Duration:</strong> ${duration}</p>
+            <p><strong>Annual Rent:</strong> ${amount}</p>
+            <p><strong>Commission:</strong> ${commission}</p>
+            <p><strong>Total:</strong> ${total}</p>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Contact Number:</strong> ${number}</p>
+        </div>
+        <div class="footer">
+            <p>Thank you for your payment!</p>
+        </div>
+    </div>
+</body>
+</html>`;
+
+
+
+        const options = {
+            html: htmlContent,
+            fileName: 'receipt',
+            directory: 'Documents',
+        };
+
+        try {
+            const { uri } = await Print.printToFileAsync({ html: htmlContent });
+            console.log('PDF generated at:', uri);
+
+            const newPath = `${FileSystem.documentDirectory}CampusNestReceipt.pdf`;
+            await FileSystem.moveAsync({
+                from: uri,
+                to: newPath,
+            });
+
+            await shareAsync(newPath);
+        } catch (e) {
+            console.error(e);
+        }
+    };
         return (
             <SafeAreaView style={styles.container}>
                 <Header/>
@@ -163,7 +304,8 @@ const Home = () => {
                     ) : apartmentData.length > 0 ? (
                         apartmentData.map((apartment) => (
                             <View key={apartment.id} style={styles.apartmentContainer}>
-                                <Image source={{uri: apartment.apartmentImage[0].imageUrl}} style={styles.image}/>
+                                <Image source={{ uri: apartment.image}} style={styles.image} />
+                                {/*<Image source={{uri: apartment.apartmentImage[0].imageUrl}} style={styles.image}/>*/}
                                 <View style={styles.textRow}>
                                     <Icon name="home-outline" size={20} color="#4F8EF7"/>
                                     <Text style={styles.text}>Type: {apartment.apartmentType}</Text>
@@ -204,10 +346,7 @@ const Home = () => {
                         <View style={styles.modalContent}>
                             {selectedApartment && (
                                 <>
-                                    <Image
-                                        source={{uri: selectedApartment.apartmentImage[0].imageUrl}}
-                                        style={styles.image}
-                                    />
+                                    <Image source={{ uri: selectedApartment.image}} style={styles.image} />
                                     <View style={styles.textRow}>
                                         <Icon name="document-text-outline" size={20} color="#4F8EF7"/>
                                         <Text style={styles.text}>Description: {selectedApartment.description}</Text>
@@ -226,6 +365,29 @@ const Home = () => {
                                     </View>
                                 </>
                             )}
+                        </View>
+                    </View>
+                </Modal>
+
+                {showCompleteProfile && (
+                    <View style={styles.backgroundOverlay} />
+                )}
+
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={showCompleteProfile}
+                    onRequestClose={() => { /* do nothing */ }}
+                >
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalView2}>
+                            <TouchableOpacity onPress={() => setShowCompleteProfile(!showCompleteProfile)}>
+                                <Image source={icons.cancel} style={{width:25,height:25}} className="ml-72 mb-4"/>
+                            </TouchableOpacity>
+                            <Text style={styles.txt}>Complete Registration</Text>
+
+                            <StudentCompleteRegistration/>
+
                         </View>
                     </View>
                 </Modal>
@@ -308,6 +470,39 @@ const Home = () => {
             color: '#000',
             fontWeight: 'bold',
         },
+        centeredView: {
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 22,
+        },
+        modalView2: {
+            margin: 20,
+            width: 390,
+            backgroundColor: "white",
+            borderRadius: 20,
+            padding: 35,
+            shadowColor: "#000",
+            shadowOffset: {
+                width: 0,
+                height: 2
+            },
+            shadowOpacity: 4.25,
+            shadowRadius: 4,
+            elevation: 5
+        },
+        backgroundOverlay: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1
+        }, txt : {
+            fontSize : 22,
+            fontWeight: "bold"
+        }
     });
 
 

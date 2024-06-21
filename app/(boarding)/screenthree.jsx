@@ -49,7 +49,7 @@ export default function Screenthree() {
                                     <Text style={{ color: "#006FFF" }}>Arrange Tours</Text> to View Properties
                                 </Text>
                                 <Text className="font-light text-center mt-4" style={{ color: "#B9B3B3" }}>
-                                    Lorem ipsum is simply dummy text of the printing and typesetting industry
+                                    Book a tour today and step inside your future home with ease and convenience.
                                 </Text>
                             </View>
                             <View className="mb-96 px-4 "  style={{ alignItems: 'center',marginBottom:570 }}>

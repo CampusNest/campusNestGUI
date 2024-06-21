@@ -79,6 +79,7 @@ const SignUpLandlord = () => {
         }
         finally {
             setIsSubmitting(false);
+
         }
     };
 

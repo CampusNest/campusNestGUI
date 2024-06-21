@@ -6,9 +6,9 @@ import * as FileSystem from 'expo-file-system';
 import { shareAsync } from 'expo-sharing';
 import {FontAwesome} from "@expo/vector-icons";
 
-const Receipt= () => {
+const Receipt= ({ housepix, payDate, duration, amount, commission, total, name, number }) => {
     const route = useRoute();
-    const { housepix, payDate, duration, amount, commission, total, name, number } = route.params.receiptData;
+    // const  = route.params.receiptData;
 
     const htmlContent = `
         <div style="display: flex; flex-direction: column; gap: 18px; justify-content: center; padding: 20px; background-color: white;">
@@ -40,7 +40,7 @@ const Receipt= () => {
                 to: newPath,
             });
 
-            shareAsync(newPath);
+            await shareAsync(newPath);
         } catch (e) {
             console.error(e);
         }

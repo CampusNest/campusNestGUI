@@ -100,7 +100,6 @@ const Location2 = () => {
                 type: image.mimeType || 'image/jpeg',
                 name: imageName
             });
-            console.log(imageName);
             formData.append("landLordId", lId);
             formData.append("description", description);
             formData.append("location", location);
@@ -118,6 +117,12 @@ const Location2 = () => {
 
             if (response.ok) {
                 setModalVisible(true);
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                const date = new Date();
+                const formattedDate = date.toLocaleDateString(undefined, options);
+                const formattedTime = date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+                await sendNotification(`Congratulations, your post was successful\n ${formattedDate} at ${formattedTime.replace(/:/g, '-')}`, lId);
             } else {
                 const responseJson = await response.text();
                 setErrorMessage(responseJson);
@@ -140,6 +145,28 @@ const Location2 = () => {
             setImage('');
         }
     };
+
+    const sendNotification =async (message, userId) =>{
+        const url = "http://192.168.43.125:9897/api/v1/notification/sendNotification"
+        const instance = axios.create({
+            baseURL : url,
+            headers: {
+                "Content-Type" : "application/json"
+            }
+        })
+
+        try {
+            const response = await instance.post(url,{
+                userId : userId,
+                message : message,
+            })
+
+
+
+        }catch (error){
+            console.log(error)
+        }
+    }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>

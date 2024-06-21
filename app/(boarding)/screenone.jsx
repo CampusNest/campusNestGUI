@@ -49,10 +49,10 @@ export default function ScreenOne() {
                             <View className="resize mb-7">
                                 <Text className="text-3xl text-black font-bold text-center">
                                     Discover Properties
-                                    <Text style={{ color: '#006FFF' }}> Using The Map</Text>
+                                    <Text style={{ color: '#006FFF' }}> That Matches Your Preferred Location</Text>
                                 </Text>
                                 <Text className="font-light text-center mt-4" style={{ color: '#B9B3B3' }}>
-                                    Lorem ipsum is simply dummy text of the printing and typesetting industry.
+                                    Browse through our extensive listings to find homes in the neighborhoods you love.
                                 </Text>
                             </View>
                             <View className="flex-row justify-between mt-16 px-4 ">

@@ -22,7 +22,7 @@ export const Header = () => {
         const fetchUserProfile = async () => {
             const userId = await AsyncStorage.getItem("user_id");
             if (userId) {
-                const userUrl = `http://192.168.43.125:9897/api/v1/landlordProfile/${userId}`;
+                const userUrl = `http://172.16.0.183:9897/api/v1/landlordProfile/${userId}`;
                 try {
                     const response = await axios.get(userUrl);
                     setProfilePic(response.data.imageUrl);

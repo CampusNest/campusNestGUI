@@ -1,18 +1,23 @@
-import {ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, Modal, Alert} from "react-native";
+import {ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, Modal, Alert, Pressable} from "react-native";
 import {StatusBar} from "react-native-web";
 import {SafeAreaView, useSafeAreaInsets} from "react-native-safe-area-context";
 import tailwind from 'tailwindcss-react-native';
 import {Header} from "../../components/Header";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import hos from "../../assets/images/sketch.png";
 import axios from "axios";
+import icons from "../../constants/icons";
+import CompleteRegistration from "../../components/completeRegistration";
+import AddGallery from "../../components/addGallery";
 
 const Home2 = () =>{
     const [apartmentData, setApartmentData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
     const [apartmentToDelete, setApartmentToDelete] = useState(null);
+    const [addGallery, setAddGallery] = useState(false)
+    const [gallery, setGallery] = useState(null);
 
     useEffect(() => {
         const showHouse = async () => {
@@ -26,7 +31,7 @@ const Home2 = () =>{
                     return;
                 }
 
-                const response = await fetch(`http://192.168.43.125:9897/api/v1/apartment/apartments/${userId}`, {
+                const response = await fetch(`http://172.16.0.183:9897/api/v1/apartment/apartments/${userId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -54,7 +59,7 @@ const Home2 = () =>{
     }, []);
 
     const handleDelete = async (apartmentId) => {
-        const apiBaseUrl = `http://192.168.43.125:9897/api/v1/deleteApartment/${apartmentId}`;
+        const apiBaseUrl = `http://172.16.0.183:9897/api/v1/deleteApartment/${apartmentId}`;
         const axiosInstance  = axios.create({
             baseURL: apiBaseUrl,
             headers: {
@@ -87,6 +92,13 @@ const Home2 = () =>{
         setModalVisible(true);
     };
 
+    const showGalleryUpload = (apartmentId) =>{
+        setAddGallery(true)
+        setGallery(apartmentId)
+    }
+
+
+
     return (
         <SafeAreaView style={styles.container}>
             <Header />
@@ -103,6 +115,7 @@ const Home2 = () =>{
                             <Text>Agreement and Commission: {apartment.agreementAndCommission}</Text>
                             <Text>Location: {apartment.location}</Text>
 
+
                             <View style={styles.edel}>
                                 <TouchableOpacity>
                                     <Text style={styles.edt}>Edit</Text>
@@ -112,6 +125,17 @@ const Home2 = () =>{
                                     <Text style={styles.delt}>Delete</Text>
                                 </TouchableOpacity>
                             </View>
+
+
+
+                            <View>
+
+                                <Pressable onPress={() => showGalleryUpload(apartment.id)}>
+                                    <Text>Add To Gallery</Text>
+                                </Pressable>
+                            </View>
+
+
                         </View>
                     ))
                 ) : (
@@ -151,6 +175,32 @@ const Home2 = () =>{
                         </View>
                     </View>
                 </Modal>
+
+
+
+                {addGallery && (
+                    <View style={styles.backgroundOverlay} />
+                )}
+
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={addGallery}
+                    onRequestClose={() => {}}
+                >
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalView2}>
+                            <TouchableOpacity onPress={() => setAddGallery(!addGallery)}>
+                                <Image source={icons.cancel} style={{width:25,height:25}} className="ml-72 mb-4"/>
+                            </TouchableOpacity>
+                            <Text style={styles.txt}>Add To Gallery</Text>
+
+                            <AddGallery id={gallery}/>
+
+                        </View>
+                    </View>
+                </Modal>
+
             </ScrollView>
         </SafeAreaView>
     );
@@ -221,6 +271,15 @@ const styles = StyleSheet.create({
         flexDirection : 'row',
         gap : 120,
         marginTop: 10
+    },
+    backgroundOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex: 1
     }
     });
 

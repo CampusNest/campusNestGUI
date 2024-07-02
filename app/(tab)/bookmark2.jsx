@@ -12,7 +12,7 @@ const Book = () =>{
     useEffect(() => {
         const showNotification = async () => {
             const userId = await AsyncStorage.getItem("user_id");
-            const url = `http://192.168.43.125:9897/api/v1/notification/notifications/${userId}`;
+            const url = `http://172.16.0.183:9897/api/v1/notification/notifications/${userId}`;
 
             try {
                 const response = await axios.get(url, {
@@ -23,7 +23,6 @@ const Book = () =>{
 
                 if (response.data) {
                     setNotificationData(response.data);
-                    console.log(response.data);
                 }
             } catch (error) {
                 console.log(error);

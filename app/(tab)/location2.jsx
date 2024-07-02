@@ -40,7 +40,7 @@ const Location2 = () => {
             const id = await AsyncStorage.getItem("user_id");
             setLId(id);
             if (id) {
-                const userUrl = `http://192.168.43.125:9897/api/v1/landlordProfile/${id}`;
+                const userUrl = `http://172.16.0.183:9897/api/v1/landlordProfile/${id}`;
                 const instance = axios.create({
                     baseURL: userUrl,
                     headers: {
@@ -82,7 +82,7 @@ const Location2 = () => {
 
         setIsSubmitting(true);
 
-        const apiBaseUrl = 'http://192.168.43.125:9897/api/v1/postApartment';
+        const apiBaseUrl = 'http://172.16.0.183:9897/api/v1/postApartment';
         try {
             const formData = new FormData();
 
@@ -147,7 +147,7 @@ const Location2 = () => {
     };
 
     const sendNotification =async (message, userId) =>{
-        const url = "http://192.168.43.125:9897/api/v1/notification/sendNotification"
+        const url = "http://172.16.0.183:9897/api/v1/notification/sendNotification"
         const instance = axios.create({
             baseURL : url,
             headers: {
@@ -375,7 +375,8 @@ const styles = StyleSheet.create({
         bottom: 0,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         zIndex: 1
-    }, txt : {
+    },
+    txt : {
         fontSize : 22,
         fontWeight: "bold"
     },

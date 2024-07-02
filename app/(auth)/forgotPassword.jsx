@@ -40,7 +40,7 @@ const ForgotPassword = () => {
     const submit = async () => {
         try {
             setIsSubmitting(true);
-            const response = await fetch('http://172.16.0.155:9897/api/v1/studentPassword', {
+            const response = await fetch('http://172.16.0.183:9897/api/v1/studentPassword', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

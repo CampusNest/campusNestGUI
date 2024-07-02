@@ -40,7 +40,7 @@ const SignUpLandlord = () => {
             setIsFormFilled(false);
         }
     }, [form]);
-    const apiBaseUrl = 'http://192.168.43.125:9897/api/v1/landlordRegister';
+    const apiBaseUrl = 'http://172.16.0.183:9897/api/v1/landlordRegister';
 
     const axiosInstance = axios.create({
         baseURL: apiBaseUrl,
